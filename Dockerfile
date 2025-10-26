@@ -55,7 +55,6 @@ RUN apt-get update && apt-get install -y \
 COPY package*.json ./
 COPY src ./src
 COPY config ./config
-COPY templates ./templates
 
 RUN npm ci && npm run build || true
 
@@ -100,7 +99,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
 COPY src ./src
 COPY config ./config
-COPY templates ./templates
 
 # Set Puppeteer to use system Chromium (2025 best practice)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true

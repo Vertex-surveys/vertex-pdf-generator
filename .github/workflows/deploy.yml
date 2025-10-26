@@ -52,3 +52,4 @@ jobs:
         with:
           service: vertex-pdf-generator
           token: ${{ secrets.RAILWAY_TOKEN }}
+

@@ -19,3 +19,4 @@ services:
     region: oregon
     buildCommand: docker build -t vertex-pdf-generator .
     startCommand: node src/server.js
+

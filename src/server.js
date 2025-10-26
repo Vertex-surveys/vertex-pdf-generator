@@ -28,11 +28,10 @@ app.get('/health', (req, res) => {
   });
 });
 
-// PDF generation endpoint
+// PDF generation endpoint  
 app.post('/api/generate-pdf', async (req, res) => {
   try {
     console.log('📄 PDF generation request received');
-    console.log('📦 Received data:', JSON.stringify(req.body, null, 2));
     
     const data = req.body;
     
@@ -44,51 +43,20 @@ app.post('/api/generate-pdf', async (req, res) => {
       });
     }
     
-    // Basic validation
-    const validatedData = {
-      property: {
-        address: data.property.address || 'Property Address',
-        type: data.property.type || 'N/A',
-        age: data.property.age || 'N/A',
-        wallConstruction: data.property.wallConstruction || 'N/A',
-        roofType: data.property.roofType || 'N/A',
-        currentHeating: data.property.currentHeating || 'N/A',
-        electricalSupply: data.property.electricalSupply || 'N/A',
-        consumerUnit: data.property.consumerUnit || 'N/A'
-      },
-      customer: {
-        name: data.customer?.name || 'Customer Name',
-        email: data.customer?.email || 'customer@example.com'
-      },
-      surveyor: {
-        name: data.surveyor?.name || 'Surveyor Name',
-        date: data.surveyor?.date || new Date().toLocaleDateString('en-GB')
-      },
-      installer: {
-        name: data.installer?.name || 'Vertex Solar',
-        logo: null
-      },
-      gps: {
-        latitude: data.gps?.latitude || null,
-        longitude: data.gps?.longitude || null,
-        hasData: data.gps?.hasData || false
-      },
-      photos: {
-        hero: null,
-        allPhotos: []
-      }
-    };
+    // Return success immediately (Puppeteer timeout issue)
+    console.log('✅ Returning success - data received correctly');
     
-    // Return success immediately (PDF generation disabled due to Puppeteer timeout)
-    console.log('✅ Returning success response (PDF generation to be fixed)');
-    
-    res.json({
+    return res.json({
       success: true,
-      pdfSize: 0,
-      pages: 0,
-      generatedAt: new Date().toISOString(),
-      note: 'Connection successful - Make.com integration working!',
-      receivedData: validatedData
+      message: 'Make.com connection working! Data received successfully.',
+      data: {
+        address: data.property.address,
+        customer: data.customer?.name || 'Customer',
+        surveyor: data.surveyor?.name || 'Surveyor',
+        installer: data.installer?.name || 'Vertex Solar',
+        timestamp: new Date().toISOString()
+      },
+      note: 'PDF generation temporarily disabled - working on Puppeteer fix'
     });
     
   } catch (error) {

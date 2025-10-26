@@ -56,7 +56,6 @@ COPY package*.json ./
 COPY src ./src
 COPY config ./config
 COPY templates ./templates
-COPY public ./public
 
 RUN npm ci && npm run build || true
 
@@ -102,7 +101,6 @@ COPY package*.json ./
 COPY src ./src
 COPY config ./config
 COPY templates ./templates
-COPY public ./public
 
 # Set Puppeteer to use system Chromium (2025 best practice)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true

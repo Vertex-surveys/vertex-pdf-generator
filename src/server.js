@@ -32,18 +32,55 @@ app.get('/health', (req, res) => {
 app.post('/api/generate-pdf', async (req, res) => {
   try {
     console.log('📄 PDF generation request received');
+    console.log('📦 Received data:', JSON.stringify(req.body, null, 2));
     
     const data = req.body;
     
     // Validate required data
     if (!data.property || !data.property.address) {
       return res.status(400).json({ 
-        error: 'Missing required property data' 
+        error: 'Missing required property data',
+        received: Object.keys(req.body)
       });
     }
     
+    // Basic validation
+    const validatedData = {
+      property: {
+        address: data.property.address || 'Property Address',
+        type: data.property.type || 'N/A',
+        age: data.property.age || 'N/A',
+        wallConstruction: data.property.wallConstruction || 'N/A',
+        roofType: data.property.roofType || 'N/A',
+        currentHeating: data.property.currentHeating || 'N/A',
+        electricalSupply: data.property.electricalSupply || 'N/A',
+        consumerUnit: data.property.consumerUnit || 'N/A'
+      },
+      customer: {
+        name: data.customer?.name || 'Customer Name',
+        email: data.customer?.email || 'customer@example.com'
+      },
+      surveyor: {
+        name: data.surveyor?.name || 'Surveyor Name',
+        date: data.surveyor?.date || new Date().toLocaleDateString('en-GB')
+      },
+      installer: {
+        name: data.installer?.name || 'Vertex Solar',
+        logo: null
+      },
+      gps: {
+        latitude: data.gps?.latitude || null,
+        longitude: data.gps?.longitude || null,
+        hasData: data.gps?.hasData || false
+      },
+      photos: {
+        hero: null,
+        allPhotos: []
+      }
+    };
+    
     // Generate PDF
-    const pdfBuffer = await generatePDF(data);
+    const pdfBuffer = await generatePDF(validatedData);
     
     console.log(`✅ PDF generated successfully (${pdfBuffer.length} bytes)`);
     
@@ -58,7 +95,8 @@ app.post('/api/generate-pdf', async (req, res) => {
     console.error('❌ PDF generation failed:', error);
     res.status(500).json({ 
       error: 'PDF generation failed',
-      message: error.message 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
@@ -536,4 +574,5 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
 

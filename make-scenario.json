@@ -1,0 +1,202 @@
+{
+  "name": "Vertex Solar PDF Generation",
+  "description": "Automated PDF generation for Vertex Solar surveys",
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "webhook",
+      "config": {
+        "url": "https://hook.eu1.make.com/[YOUR_WEBHOOK_ID]",
+        "method": "POST",
+        "contentType": "application/json",
+        "description": "Triggers when Fulcrum survey is completed"
+      }
+    },
+    {
+      "id": "fulcrum-data-fetch",
+      "name": "Fulcrum Data Fetch",
+      "type": "http",
+      "config": {
+        "url": "https://api.fulcrumapp.com/api/v2/records/{{webhook.record_id}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer {{FULCRUM_API_KEY}}",
+          "Content-Type": "application/json"
+        },
+        "description": "Fetch complete record data from Fulcrum"
+      }
+    },
+    {
+      "id": "fulcrum-photos-fetch",
+      "name": "Fulcrum Photos Fetch",
+      "type": "http",
+      "config": {
+        "url": "https://api.fulcrumapp.com/api/v2/records/{{webhook.record_id}}/photos",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer {{FULCRUM_API_KEY}}"
+        },
+        "description": "Fetch all photos for the record"
+      }
+    },
+    {
+      "id": "data-transformation",
+      "name": "Data Transformation",
+      "type": "code",
+      "config": {
+        "language": "javascript",
+        "code": "// Extract and transform Fulcrum data\nconst fulcrumData = bundle.inputData;\nconst photos = bundle.inputData2;\n\n// Helper functions\nfunction extractChoice(formValues, fieldId) {\n  const field = formValues[fieldId];\n  if (field && field.choice_values && field.choice_values.length > 0) {\n    return field.choice_values[0];\n  }\n  return 'N/A';\n}\n\nfunction extractText(formValues, fieldId) {\n  const field = formValues[fieldId];\n  if (field && field.value) {\n    return field.value;\n  }\n  return 'N/A';\n}\n\nfunction extractPhoto(formValues, fieldId) {\n  const field = formValues[fieldId];\n  if (field && Array.isArray(field) && field.length > 0) {\n    return field[0];\n  }\n  return null;\n}\n\nfunction extractAddress(formValues) {\n  const addressField = formValues['7b00'];\n  if (addressField && addressField.value) {\n    const parts = [\n      addressField.value.sub_thoroughfare,\n      addressField.value.thoroughfare,\n      addressField.value.locality,\n      addressField.value.admin_area,\n      addressField.value.postal_code\n    ].filter(part => part && part.trim());\n    \n    if (parts.length > 0) {\n      return parts.join(', ');\n    }\n  }\n  return 'HEAT PUMP ASSESSMENT';\n}\n\n// Transform data\nconst formValues = fulcrumData._formValuesJSON || {};\nconst transformedData = {\n  // Survey Information\n  id: fulcrumData.id || 'N/A',\n  createdAt: fulcrumData.created_at || new Date().toISOString(),\n  \n  // Property Information\n  property: {\n    address: extractAddress(formValues),\n    type: extractChoice(formValues, '6660'),\n    age: extractChoice(formValues, '5d3b'),\n    wallConstruction: extractChoice(formValues, '2bfd'),\n    roofType: extractChoice(formValues, 'fd00'),\n    floorConstruction: extractChoice(formValues, '8600'),\n    currentHeating: extractChoice(formValues, '4100'),\n    electricalSupply: extractChoice(formValues, '30e7'),\n    consumerUnit: extractChoice(formValues, '286a')\n  },\n  \n  // Installer Information\n  installer: {\n    name: extractChoice(formValues, 'installer_company_choice'),\n    logo: extractPhoto(formValues, '609d'),\n    contact: extractText(formValues, 'installer_contact')\n  },\n  \n  // Customer Information\n  customer: {\n    name: extractText(formValues, 'customer_name'),\n    email: extractText(formValues, 'customer_email'),\n    phone: extractText(formValues, 'customer_phone'),\n    address: extractAddress(formValues)\n  },\n  \n  // Photos\n  photos: {\n    hero: extractPhoto(formValues, '2480'),\n    elevation: extractPhoto(formValues, '31d9'),\n    technical: extractPhoto(formValues, '113a'),\n    rooms: extractPhoto(formValues, '3b80'),\n    allPhotos: photos || []\n  },\n  \n  // GPS Information\n  gps: {\n    latitude: fulcrumData.latitude,\n    longitude: fulcrumData.longitude,\n    hasData: !!(fulcrumData.latitude && fulcrumData.longitude)\n  },\n  \n  // Surveyor Information\n  surveyor: {\n    name: fulcrumData.createdByName || 'Professional Surveyor',\n    email: fulcrumData.createdByEmail || null,\n    date: new Date(fulcrumData.created_at).toLocaleDateString('en-GB'),\n    time: new Date(fulcrumData.created_at).toLocaleTimeString('en-GB')\n  },\n  \n  // Technical Assessment\n  technical: {\n    heatLoss: extractText(formValues, 'heat_loss_field'),\n    systemSizing: extractText(formValues, 'system_sizing_field'),\n    efficiencyRating: extractChoice(formValues, 'efficiency_rating'),\n    annualSavings: extractText(formValues, 'annual_savings'),\n    paybackPeriod: extractText(formValues, 'payback_period')\n  },\n  \n  // Recommendations\n  recommendations: {\n    primary: extractText(formValues, 'primary_recommendations'),\n    secondary: extractText(formValues, 'secondary_recommendations'),\n    immediate: extractText(formValues, 'immediate_actions'),\n    shortTerm: extractText(formValues, 'short_term_actions'),\n    longTerm: extractText(formValues, 'long_term_actions')\n  },\n  \n  // Metadata\n  metadata: {\n    formVersion: 'Vertex ASHP v1.1',\n    totalFields: Object.keys(formValues).length,\n    photoCount: photos ? photos.length : 0,\n    hasGpsData: !!(fulcrumData.latitude && fulcrumData.longitude),\n    processingDate: new Date().toISOString()\n  }\n};\n\n// Generate folder structure\nconst folderName = `${transformedData.customer.name} - ${transformedData.property.address}`.replace(/[<>:\"/\\\\|?*]/g, '_');\nconst year = new Date().getFullYear();\nconst month = new Date().toLocaleString('en-US', { month: 'long' });\n\nreturn {\n  ...transformedData,\n  folderName: folderName,\n  year: year,\n  month: month,\n  needsReview: transformedData.metadata.photoCount === 0,\n  isComplete: transformedData.metadata.totalFields > 100\n};",
+        "description": "Transform Fulcrum data to PDF generator format"
+      }
+    },
+    {
+      "id": "google-drive-folder",
+      "name": "Google Drive Folder Creation",
+      "type": "google-drive",
+      "config": {
+        "action": "create-folder",
+        "parentFolder": "Vertex Solar Surveys/{{year}}/{{month}}",
+        "folderName": "{{folderName}}",
+        "description": "Survey ID: {{id}} | Customer: {{customer.name}} | Date: {{createdAt}}"
+      }
+    },
+    {
+      "id": "pdf-generation",
+      "name": "PDF Generation",
+      "type": "http",
+      "config": {
+        "url": "https://your-pdf-generator.railway.app/api/generate-pdf",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{PDF_GENERATOR_API_KEY}}"
+        },
+        "body": "{{json(4)}}",
+        "description": "Generate the best possible PDF"
+      }
+    },
+    {
+      "id": "pdf-upload",
+      "name": "PDF Upload to Drive",
+      "type": "google-drive",
+      "config": {
+        "action": "upload-file",
+        "file": "{{pdfBuffer}}",
+        "folder": "{{folderId}}",
+        "fileName": "Professional Heat Pump Assessment - {{customer.name}}.pdf",
+        "description": "Complete technical assessment report"
+      }
+    },
+    {
+      "id": "portal-update",
+      "name": "Portal Database Update",
+      "type": "http",
+      "config": {
+        "url": "https://your-portal.com/api/surveys",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{PORTAL_API_KEY}}"
+        },
+        "body": {
+          "surveyId": "{{id}}",
+          "customerName": "{{customer.name}}",
+          "propertyAddress": "{{property.address}}",
+          "installerName": "{{installer.name}}",
+          "surveyorName": "{{surveyor.name}}",
+          "surveyDate": "{{createdAt}}",
+          "pdfUrl": "{{pdfDriveUrl}}",
+          "folderUrl": "{{folderUrl}}",
+          "status": "completed",
+          "photoCount": "{{metadata.photoCount}}",
+          "hasGpsData": "{{gps.hasData}}"
+        }
+      }
+    },
+    {
+      "id": "email-notification",
+      "name": "Email Notification",
+      "type": "email",
+      "config": {
+        "to": "{{customer.email}}",
+        "subject": "Your Professional Heat Pump Assessment Report is Ready",
+        "body": "Dear {{customer.name}},\n\nYour professional heat pump assessment report for {{property.address}} is now ready!\n\nYou can download your report here: {{pdfDriveUrl}}\n\nThis comprehensive report includes:\n- Detailed property analysis\n- Technical recommendations\n- Energy efficiency calculations\n- Cost savings projections\n- Installation requirements\n\nIf you have any questions, please don't hesitate to contact us.\n\nBest regards,\nVertex Solar Team",
+        "attachments": "{{pdfBuffer}}"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "FULCRUM_API_KEY",
+      "description": "Fulcrum API key for data fetching",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "PDF_GENERATOR_API_KEY",
+      "description": "API key for PDF generator service",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "PDF_GENERATOR_URL",
+      "description": "URL of the deployed PDF generator",
+      "type": "string",
+      "required": true,
+      "default": "https://your-pdf-generator.railway.app"
+    },
+    {
+      "name": "GOOGLE_DRIVE_CREDENTIALS",
+      "description": "Google Drive service account credentials",
+      "type": "json",
+      "required": true
+    },
+    {
+      "name": "PORTAL_API_KEY",
+      "description": "API key for portal database",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "PORTAL_URL",
+      "description": "URL of the portal application",
+      "type": "string",
+      "required": true,
+      "default": "https://your-portal.com"
+    },
+    {
+      "name": "EMAIL_SERVICE_API_KEY",
+      "description": "API key for email service",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "errorHandling": {
+    "retryAttempts": 3,
+    "retryDelay": 5000,
+    "alerts": [
+      {
+        "condition": "error_rate > 0.1",
+        "action": "email_admin",
+        "message": "High error rate detected in PDF generation"
+      },
+      {
+        "condition": "execution_time > 30000",
+        "action": "slack_notification",
+        "message": "PDF generation taking longer than expected"
+      }
+    ]
+  },
+  "monitoring": {
+    "successRate": "> 99%",
+    "averageExecutionTime": "< 30 seconds",
+    "errorRate": "< 1%",
+    "alerts": {
+      "email": "admin@vertexsolar.com",
+      "slack": "#pdf-alerts"
+    }
+  }
+}
+

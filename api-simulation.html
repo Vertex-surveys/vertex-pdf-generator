@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vertex PDF Generator API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        .endpoint { background: #e8f4fd; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196F3; }
+        .method { font-weight: bold; color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Vertex PDF Generator API</h1>
+        <p>This is a simulation of the PDF generator API endpoints for GoDaddy hosting.</p>
+        
+        <div class="endpoint">
+            <div class="method">GET /health</div>
+            <div>Returns API health status</div>
+            <div><strong>Response:</strong> {"status": "ok", "service": "Vertex PDF Generator", "version": "1.0.0"}</div>
+        </div>
+        
+        <div class="endpoint">
+            <div class="method">POST /api/generate-pdf</div>
+            <div>Generates PDF from survey data</div>
+            <div><strong>Body:</strong> JSON with survey data</div>
+            <div><strong>Response:</strong> PDF file download</div>
+        </div>
+        
+        <div class="endpoint">
+            <div class="method">POST /api/test-pdf</div>
+            <div>Generates test PDF</div>
+            <div><strong>Response:</strong> Test PDF file</div>
+        </div>
+        
+        <p><strong>Note:</strong> This is a static simulation. For full functionality, integrate with Make.com webhooks.</p>
+    </div>
+</body>
+</html>

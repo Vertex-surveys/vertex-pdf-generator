@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Generator Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-button { background: #007cba; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 10px; }
+        .test-button:hover { background: #005a87; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Vertex PDF Generator - Deployment Test</h1>
+        <p>This page tests if your PDF generator is working correctly.</p>
+        
+        <button class="test-button" onclick="testHealth()">Test Health Check</button>
+        <button class="test-button" onclick="testPDF()">Test PDF Generation</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        
+        async function testHealth() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing health check...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (data.status === 'ok') {
+                    resultDiv.innerHTML = `<div class="result success">✅ Health Check Passed!<br>Service: ${data.service}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Health Check Failed: ${JSON.stringify(data)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Health Check Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testPDF() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing PDF generation...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/test-pdf`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        test: true,
+                        message: 'PDF Generator Test'
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'test-pdf.pdf';
+                    a.click();
+                    resultDiv.innerHTML = `<div class="result success">✅ PDF Generated Successfully!<br>Download started automatically.</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ PDF Generation Failed: ${response.status} ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ PDF Generation Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

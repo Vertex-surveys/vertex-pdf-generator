@@ -1,0 +1,36 @@
+{
+  "name": "vertex-pdf-generator",
+  "version": "1.0.0",
+  "description": "Professional PDF generation system for Vertex Solar surveys",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node src/test.js"
+  },
+  "keywords": [
+    "pdf",
+    "generation",
+    "solar",
+    "surveys",
+    "vertex"
+  ],
+  "author": "Vertex Solar",
+  "license": "MIT",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "googleapis": "^128.0.0",
+    "helmet": "^7.1.0",
+    "puppeteer": "^24.26.1",
+    "sharp": "^0.32.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

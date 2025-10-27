@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y \
 COPY package*.json ./
 
 # Install dependencies (allow scripts to run for Sharp)
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Copy application
 COPY src ./src

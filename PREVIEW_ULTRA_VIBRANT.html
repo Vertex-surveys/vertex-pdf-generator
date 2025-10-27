@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway PDF - Ultra-Vibrant Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a252f 0%, #2C3E50 100%);
+            color: white;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg,
+                rgba(244, 228, 188, 0.15) 0%,
+                rgba(212, 175, 55, 0.12) 50%,
+                rgba(200, 178, 115, 0.08) 100%);
+            backdrop-filter: blur(16px);
+            border: 2px solid #C8B273;
+            border-radius: 12px;
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.25),
+                0 4px 16px rgba(200, 178, 115, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-header h1 {
+            font-size: 32pt;
+            font-weight: 900;
+            color: #C8B273;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .preview-header p {
+            font-size: 14pt;
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        /* Shimmer Animation */
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Section Styling */
+        .section {
+            background: linear-gradient(135deg,
+                rgba(244, 228, 188, 0.15) 0%,
+                rgba(212, 175, 55, 0.12) 50%,
+                rgba(200, 178, 115, 0.08) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid #C8B273;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.25),
+                0 4px 16px rgba(200, 178, 115, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        .section-header {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .icon-container {
+            display: table-cell;
+            width: 52px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #C8B273, #D4AF37);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title-container {
+            display: table-cell;
+            vertical-align: middle;
+            padding-left: 14px;
+        }
+
+        .section-title {
+            font-size: 20pt;
+            font-weight: 900;
+            color: #C8B273;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .section-subtitle {
+            font-size: 10pt;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card {
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+        }
+
+        .card-label {
+            font-size: 10pt;
+            color: #C8B273;
+            font-weight: 800;
+            margin-bottom: 6px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .card-value {
+            font-size: 12pt;
+            color: #ffffff;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            line-height: 1.3;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .subsection-title {
+            font-size: 16pt;
+            font-weight: 900;
+            color: #C8B273;
+            margin: 20px 0 14px 0;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(200, 178, 115, 0.3);
+            padding-bottom: 8px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #C8B273 0%, #D4AF37 100%);
+        }
+
+        th {
+            padding: 14px 10px;
+            text-align: center;
+            font-size: 10pt;
+            font-weight: 900;
+            color: #2C3E50;
+            border-right: 2px solid rgba(44, 62, 80, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:last-child {
+            border-right: none;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(200, 178, 115, 0.2);
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(200, 178, 115, 0.15);
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(200, 178, 115, 0.08);
+        }
+
+        td {
+            padding: 12px 10px;
+            border-right: 2px solid rgba(200, 178, 115, 0.2);
+            vertical-align: top;
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        .room-link {
+            color: #C8B273;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 11pt;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .room-link:hover {
+            color: #D4AF37;
+        }
+
+        /* Hero Cards */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, rgba(244, 228, 188, 0.2) 0%, rgba(212, 175, 55, 0.15) 100%);
+            border: 3px solid #C8B273;
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 30px rgba(200, 178, 115, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.15), transparent);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        .hero-label {
+            font-size: 12pt;
+            color: #C8B273;
+            font-weight: 900;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-value {
+            font-size: 36pt;
+            color: #ffffff;
+            font-weight: 900;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-unit {
+            font-size: 20pt;
+        }
+
+        /* Photo Grid */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .photo-container {
+            background: linear-gradient(135deg,
+                rgba(244, 228, 188, 0.08) 0%,
+                rgba(212, 175, 55, 0.05) 100%);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            border: 2px solid #C8B273;
+            padding: 6px;
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.15),
+                0 2px 8px rgba(44, 62, 80, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 240px;
+            background: linear-gradient(135deg, #2C3E50 0%, #475569 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C8B273;
+            font-size: 14pt;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Preview Header -->
+        <div class="preview-header">
+            <h1>🌟 ULTRA-VIBRANT DESIGN PREVIEW</h1>
+            <p>Railway PDF Generator - Best Portal Page Quality</p>
+        </div>
+
+        <!-- SECTION 03: PROPERTY OVERVIEW -->
+        <div class="section">
+            <div class="section-header">
+                <div class="icon-container">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+                                  stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+                            <path d="M9 22V12H15V22" stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="section-title-container">
+                    <div class="section-title">PROPERTY OVERVIEW</div>
+                    <div class="section-subtitle">Complete Building Assessment</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Address Card (Full Width) -->
+                <div class="card">
+                    <div class="card-label">PROPERTY ADDRESS</div>
+                    <div class="card-value">123 Main Street, Springfield, IL 62701</div>
+                </div>
+
+                <!-- Type & Age Row -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-label">PROPERTY TYPE</div>
+                        <div class="card-value">Detached House</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">CONSTRUCTION AGE</div>
+                        <div class="card-value">1950-1966</div>
+                    </div>
+                </div>
+
+                <!-- Building Fabric Section -->
+                <div class="subsection-title">BUILDING FABRIC</div>
+                <div class="grid-4">
+                    <div class="card">
+                        <div class="card-label">WALL CONSTRUCTION</div>
+                        <div class="card-value">Cavity Wall</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">ROOF TYPE</div>
+                        <div class="card-value">Pitched Roof</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">FLOOR CONSTRUCTION</div>
+                        <div class="card-value">Suspended Timber</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">GLAZING TYPE</div>
+                        <div class="card-value">Double Glazed</div>
+                    </div>
+                </div>
+
+                <!-- Current Systems Section -->
+                <div class="subsection-title">CURRENT SYSTEMS</div>
+                <div class="grid-3">
+                    <div class="card" style="text-align: center;">
+                        <div class="card-label">CURRENT HEATING</div>
+                        <div class="card-value">Gas Boiler</div>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <div class="card-label">ELECTRICAL SUPPLY</div>
+                        <div class="card-value">Single Phase</div>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <div class="card-label">CONSUMER UNIT</div>
+                        <div class="card-value">Modern RCD</div>
+                    </div>
+                </div>
+
+                <!-- Property Photos -->
+                <div class="subsection-title">PROPERTY PHOTOS</div>
+                <div class="photo-grid">
+                    <div class="photo-container">
+                        <div class="photo-placeholder">📸 Property Front</div>
+                    </div>
+                    <div class="photo-container">
+                        <div class="photo-placeholder">📸 Property Side</div>
+                    </div>
+                    <div class="photo-container">
+                        <div class="photo-placeholder">📸 Property Rear</div>
+                    </div>
+                    <div class="photo-container">
+                        <div class="photo-placeholder">📸 Property Detail</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 03B: HEAT LOSS SUMMARY -->
+        <div class="section">
+            <div class="section-header">
+                <div class="icon-container">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H17C18.1046 3 19 3.89543 19 5V19C19 20.1046 18.1046 21 17 21Z"
+                                  stroke="#2C3E50" stroke-width="2.5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="section-title-container">
+                    <div class="section-title">HEAT LOSS SUMMARY</div>
+                    <div class="section-subtitle">Comprehensive Heat Loss Analysis</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Floor Plan Placeholder -->
+                <div class="subsection-title">FLOOR PLAN</div>
+                <div class="photo-container" style="max-width: 800px; margin: 0 auto 30px auto;">
+                    <div class="photo-placeholder" style="height: 400px;">🗺️ Property Floor Plan</div>
+                </div>
+
+                <!-- Room Assessment Table -->
+                <div class="subsection-title" style="text-align: center; margin-top: 30px;">ROOM ASSESSMENT OVERVIEW</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">ROOM</th>
+                            <th>HEIGHT</th>
+                            <th>FLOOR</th>
+                            <th>WINDOWS</th>
+                            <th>RADS</th>
+                            <th>DOORS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a href="#" class="room-link">Living Room</a>
+                                <div style="font-size: 9pt; color: #ffffff; margin-top: 4px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                                    Ground Floor
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 12pt; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">2.40m</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 10pt; font-weight: 600; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Carpet</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">2 Windows</div>
+                                <div style="font-size: 9pt; color: #ffffff; font-weight: 600;">1200×1500mm</div>
+                                <div style="font-size: 8pt; color: #C8B273;">Double Glazed</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 16pt; color: #C8B273; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">2</div>
+                                <div style="font-size: 8pt; color: #ffffff; font-weight: 600; margin-top: 2px;">Panel</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 12pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Yes</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#" class="room-link">Kitchen</a>
+                                <div style="font-size: 9pt; color: #ffffff; margin-top: 4px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                                    Ground Floor
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 12pt; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">2.40m</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 10pt; font-weight: 600; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Tile</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">1 Window</div>
+                                <div style="font-size: 9pt; color: #ffffff; font-weight: 600;">900×1200mm</div>
+                                <div style="font-size: 8pt; color: #C8B273;">Double Glazed</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 16pt; color: #C8B273; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">1</div>
+                                <div style="font-size: 8pt; color: #ffffff; font-weight: 600; margin-top: 2px;">Panel</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 12pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Yes</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="#" class="room-link">Bedroom 1</a>
+                                <div style="font-size: 9pt; color: #ffffff; margin-top: 4px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                                    First Floor
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 12pt; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">2.40m</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 10pt; font-weight: 600; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Carpet</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">2 Windows</div>
+                                <div style="font-size: 9pt; color: #ffffff; font-weight: 600;">1200×1500mm</div>
+                                <div style="font-size: 8pt; color: #C8B273;">Double Glazed</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 16pt; color: #C8B273; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">1</div>
+                                <div style="font-size: 8pt; color: #ffffff; font-weight: 600; margin-top: 2px;">Panel</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="font-size: 12pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Yes</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Heat Loss Calculations -->
+                <div class="subsection-title" style="text-align: center; margin-top: 30px;">FABRIC HEAT LOSS ANALYSIS</div>
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="card" style="text-align: center; padding: 18px;">
+                        <div class="card-label">Wall Heat Loss</div>
+                        <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+                            2,500 <span style="font-size: 14pt;">W</span>
+                        </div>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 18px;">
+                        <div class="card-label">Roof Heat Loss</div>
+                        <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+                            1,200 <span style="font-size: 14pt;">W</span>
+                        </div>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 18px;">
+                        <div class="card-label">Floor Heat Loss</div>
+                        <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+                            800 <span style="font-size: 14pt;">W</span>
+                        </div>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 18px;">
+                        <div class="card-label">Window Heat Loss</div>
+                        <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+                            1,500 <span style="font-size: 14pt;">W</span>
+                        </div>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 18px;">
+                        <div class="card-label">Door Heat Loss</div>
+                        <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+                            300 <span style="font-size: 14pt;">W</span>
+                        </div>
+                    </div>
+                    <div class="card" style="text-align: center; padding: 18px;">
+                        <div class="card-label">Ventilation Loss</div>
+                        <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+                            600 <span style="font-size: 14pt;">W</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Cards -->
+                <div class="hero-grid">
+                    <div class="hero-card">
+                        <div class="hero-label">TOTAL HEAT LOSS</div>
+                        <div class="hero-value">6,900 <span class="hero-unit">W</span></div>
+                    </div>
+                    <div class="hero-card">
+                        <div class="hero-label">RECOMMENDED CAPACITY</div>
+                        <div class="hero-value">8,500 <span class="hero-unit">W</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+  <meta name="theme-color" content="#1E293B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Vertex Survey">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="preconnect" href="https://api.fulcrumapp.com">
+  
+  <title>Professional ASHP Assessment - <%= data.property.address || 'Vertex Survey' %></title>
+  
+  <style>
+    <%= require('fs').readFileSync(require('path').join(__dirname, '../../public/styles/pdf-styles.css'), 'utf8') %>
+    
+    /* Additional Railway-specific styles */
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .customer-name-card {
+      text-align: center;
+      margin: 20px 0 24px 0;
+      padding: 16px 20px;
+      background: linear-gradient(135deg,
+        rgba(255, 215, 0, 0.18) 0%,
+        rgba(244, 228, 188, 0.15) 50%,
+        rgba(200, 178, 115, 0.12) 100%);
+      backdrop-filter: blur(12px);
+      border: 2px solid #FFD700;
+      border-radius: 12px;
+      box-shadow:
+        0 0 30px rgba(255, 215, 0, 0.12),
+        0 8px 25px rgba(0, 0, 0, 0.15),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .customer-name-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.15), transparent);
+      animation: shimmer 3s infinite;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header-compact">
+  <div style="flex-shrink: 0;">
+    <svg width="48" height="48" viewBox="0 0 200 200">
+      <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#FFD700"/>
+          <stop offset="50%" style="stop-color:#FFC107"/>
+          <stop offset="100%" style="stop-color:#FFD700"/>
+        </linearGradient>
+      </defs>
+      <path d="M100 40 L160 140 L40 140 Z" stroke="url(#goldGrad)" stroke-width="8" fill="none"/>
+      <path d="M85 110 A 18 18 0 1 1 115 110 L100 91 Z" fill="url(#goldGrad)"/>
+    </svg>
+  </div>
+  <div style="flex: 1; text-align: center;">
+    <div style="font-size: 18pt; font-weight: 900; color: #FFD700; letter-spacing: 2px;">
+      VERTEX RENEWABLE SURVEYS
+    </div>
+  </div>
+  <div style="flex-shrink: 0; text-align: right;">
+    <div style="font-size: 10pt; color: #FFD700; font-weight: 700;">
+      <%= data.survey?.id || 'VX-SURVEY' %>
+    </div>
+  </div>
+</div>
+
+<!-- Partnership Banner -->
+<div class="glass-card" style="margin-bottom: 20px;">
+  <h2>IN PARTNERSHIP WITH <%= (data.installer?.name || 'VERTEX SOLAR').toUpperCase() %></h2>
+</div>
+
+<!-- Hero Photo -->
+<% if (data.photos?.hero?.[0]?.url) { %>
+<div style="margin-bottom: 24px; position: relative;">
+  <div style="position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.2) 0%, transparent 70%); border-radius: 24px; filter: blur(20px); z-index: 0;"></div>
+  <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 193, 7, 0.05) 100%); backdrop-filter: blur(8px); border-radius: 20px; border: 2px solid #FFD700; padding: 12px; box-shadow: 0 0 60px rgba(255, 215, 0, 0.2), 0 20px 70px rgba(0, 0, 0, 0.25), inset 0 3px 0 rgba(255, 255, 255, 0.15); position: relative; overflow: hidden;">
+    <img src="<%= data.photos.hero[0].url %>" alt="Property Assessment" style="width: 100%; height: 320px; object-fit: cover; border-radius: 12px; display: block;" />
+  </div>
+</div>
+<% } %>
+
+<!-- Property Address -->
+<div class="glass-card" style="text-align: center; margin-bottom: 20px;">
+  <div style="font-size: 36pt; font-weight: 900; background: linear-gradient(135deg, #FFD700 0%, #FFC107 20%, #D4AF37 40%, #FFC107 60%, #FFD700 80%, #D4AF37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% auto; animation: gradient-shift 4s ease infinite; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)) drop-shadow(0 0 30px rgba(255,215,0,0.5)); letter-spacing: 1.5px;">
+    <%= data.property?.address || 'Professional ASHP Assessment' %>
+  </div>
+  <div style="font-size: 14pt; color: #ffffff; margin-top: 10px;">
+    Technical Survey & Analysis
+  </div>
+</div>
+
+<!-- Customer Name -->
+<div class="customer-name-card">
+  <div style="font-size: 11pt; background: linear-gradient(90deg, #D4AF37 0%, #FFD700 50%, #D4AF37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: 2px; margin-bottom: 6px; text-transform: uppercase; position: relative; z-index: 2;">
+    Survey Prepared For
+  </div>
+  <div style="font-size: 24pt; font-weight: 900; background: linear-gradient(135deg, #FFFFFF 0%, #FFF8E7 25%, #FFFFFF 50%, #FFF8E7 75%, #FFFFFF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); letter-spacing: 1px; position: relative; z-index: 2;">
+    <%= data.customer?.name || 'Valued Customer' %>
+  </div>
+</div>
+
+<!-- Survey Metadata -->
+<div class="metadata-grid">
+  <div class="metadata-card">
+    <span class="metadata-label">SURVEYOR</span>
+    <span class="metadata-value"><%= data.surveyor?.name || 'Professional Surveyor' %></span>
+  </div>
+  <div class="metadata-card">
+    <span class="metadata-label">SURVEY DATE</span>
+    <span class="metadata-value"><%= new Date(data.survey?.date || Date.now()).toLocaleDateString('en-GB') %></span>
+  </div>
+  <div class="metadata-card">
+    <span class="metadata-label">PROPERTY TYPE</span>
+    <span class="metadata-value"><%= data.property?.type || 'N/A' %></span>
+  </div>
+  <div class="metadata-card">
+    <span class="metadata-label">PHOTOS</span>
+    <span class="metadata-value"><%= data.photos?.totalCount || 0 %> Photos</span>
+  </div>
+</div>
+
+<!-- Main Content Sections -->
+<div class="page-break"></div>
+
+<!-- Navigation Page -->
+<div class="navigation-page" style="margin-top: 20px; page-break-before: always;">
+
+  <!-- Page Title -->
+  <div style="text-align: center; margin-bottom: 20px; page-break-inside: avoid;">
+    <div style="font-size: 28pt; font-weight: 900; color: #C8B273; margin-bottom: 6px; line-height: 1.1; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 1px;">
+      SURVEY NAVIGATION
+    </div>
+    <div style="font-size: 12pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4); letter-spacing: 0.5px;">
+      Complete Technical Assessment
+    </div>
+  </div>
+
+  <!-- Navigation Cards Grid -->
+  <div style="display: table; width: 100%; table-layout: fixed; border-spacing: 12px; margin-bottom: 0px; page-break-inside: avoid;">
+    
+    <!-- ROW 1 -->
+    <div style="display: table-row;">
+      
+      <!-- Property Overview Card -->
+      <div style="display: table-cell; width: 50%; vertical-align: top;">
+        <div style="background: linear-gradient(135deg, rgba(244, 228, 188, 0.18) 0%, rgba(212, 175, 55, 0.15) 50%, rgba(200, 178, 115, 0.12) 100%); backdrop-filter: blur(12px); border: 2px solid #C8B273; border-radius: 12px; padding: 20px; height: 200px; box-sizing: border-box; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(44, 62, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #C8B273, #D4AF37); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="#2C3E50" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M9 22V12H15V22" stroke="#2C3E50" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div style="font-size: 16pt; font-weight: 900; color: #C8B273; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+              PROPERTY OVERVIEW
+            </div>
+          </div>
+          <div style="font-size: 11pt; color: #ffffff; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4); font-weight: 600; text-align: center; margin-top: 20px;">
+            Property details, energy information, and building specifications
+          </div>
+        </div>
+      </div>
+
+      <!-- Room Assessment Card -->
+      <div style="display: table-cell; width: 50%; vertical-align: top;">
+        <div style="background: linear-gradient(135deg, rgba(244, 228, 188, 0.18) 0%, rgba(212, 175, 55, 0.15) 50%, rgba(200, 178, 115, 0.12) 100%); backdrop-filter: blur(12px); border: 2px solid #C8B273; border-radius: 12px; padding: 16px; height: 200px; box-sizing: border-box; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(44, 62, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #C8B273, #D4AF37); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="#2C3E50" stroke-width="2"/>
+              </svg>
+            </div>
+            <div style="font-size: 16pt; font-weight: 900; color: #C8B273; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+              ROOM ASSESSMENT
+            </div>
+          </div>
+          <div style="font-size: 11pt; color: #ffffff; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4); font-weight: 600; text-align: center; margin-top: 20px;">
+            Individual room analysis with dimensions, windows, and radiators
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div style="display: table-row;">
+      
+      <!-- Heating Systems Card -->
+      <div style="display: table-cell; width: 50%; vertical-align: top;">
+        <div style="background: linear-gradient(135deg, rgba(244, 228, 188, 0.18) 0%, rgba(212, 175, 55, 0.15) 50%, rgba(200, 178, 115, 0.12) 100%); backdrop-filter: blur(12px); border: 2px solid #C8B273; border-radius: 12px; padding: 16px; height: 160px; box-sizing: border-box; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(44, 62, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #C8B273, #D4AF37); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2V6M12 18V22" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div style="font-size: 16pt; font-weight: 900; color: #C8B273; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+              HEATING SYSTEMS
+            </div>
+          </div>
+          <div style="font-size: 11pt; color: #ffffff; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4); font-weight: 600; text-align: center; margin-top: 20px;">
+            Current heating system analysis and pipework assessment
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Systems Card -->
+      <div style="display: table-cell; width: 50%; vertical-align: top;">
+        <div style="background: linear-gradient(135deg, rgba(244, 228, 188, 0.18) 0%, rgba(212, 175, 55, 0.15) 50%, rgba(200, 178, 115, 0.12) 100%); backdrop-filter: blur(12px); border: 2px solid #C8B273; border-radius: 12px; padding: 16px; height: 160px; box-sizing: border-box; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(44, 62, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #C8B273, #D4AF37); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="#2C3E50" stroke-width="2"/>
+              </svg>
+            </div>
+            <div style="font-size: 16pt; font-weight: 900; color: #C8B273; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+              TECHNICAL SYSTEMS
+            </div>
+          </div>
+          <div style="font-size: 11pt; color: #ffffff; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4); font-weight: 600; text-align: center; margin-top: 20px;">
+            Electrical, loft, and cylinder system assessments
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3 -->
+    <div style="display: table-row;">
+      
+      <!-- ASHP Assessment Card -->
+      <div style="display: table-cell; width: 50%; vertical-align: top;">
+        <div style="background: linear-gradient(135deg, rgba(244, 228, 188, 0.18) 0%, rgba(212, 175, 55, 0.15) 50%, rgba(200, 178, 115, 0.12) 100%); backdrop-filter: blur(12px); border: 2px solid #C8B273; border-radius: 12px; padding: 16px; height: 160px; box-sizing: border-box; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(44, 62, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #C8B273, #D4AF37); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#2C3E50" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div style="font-size: 16pt; font-weight: 900; color: #C8B273; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+              ASHP ASSESSMENT
+            </div>
+          </div>
+          <div style="font-size: 11pt; color: #ffffff; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4); font-weight: 600; text-align: center; margin-top: 20px;">
+            Heat pump installation location and technical requirements
+          </div>
+        </div>
+      </div>
+
+      <!-- Meter & Supply Card -->
+      <div style="display: table-cell; width: 50%; vertical-align: top;">
+        <div style="background: linear-gradient(135deg, rgba(244, 228, 188, 0.18) 0%, rgba(212, 175, 55, 0.15) 50%, rgba(200, 178, 115, 0.12) 100%); backdrop-filter: blur(12px); border: 2px solid #C8B273; border-radius: 12px; padding: 16px; height: 160px; box-sizing: border-box; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(44, 62, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #C8B273, #D4AF37); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="#2C3E50" stroke-width="2"/>
+              </svg>
+            </div>
+            <div style="font-size: 16pt; font-weight: 900; color: #C8B273; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+              METER & SUPPLY
+            </div>
+          </div>
+          <div style="font-size: 11pt; color: #ffffff; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4); font-weight: 600; text-align: center; margin-top: 20px;">
+            Utility connections and supply point assessments
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4 -->
+    <div style="display: table-row;">
+      
+      <!-- Photo Documentation Card -->
+      <div style="display: table-cell; width: 50%; vertical-align: top;">
+        <div style="background: linear-gradient(135deg, rgba(244, 228, 188, 0.18) 0%, rgba(212, 175, 55, 0.15) 50%, rgba(200, 178, 115, 0.12) 100%); backdrop-filter: blur(12px); border: 2px solid #C8B273; border-radius: 12px; padding: 16px; height: 160px; box-sizing: border-box; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(44, 62, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+          
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #C8B273, #D4AF37); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="#2C3E50" stroke-width="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5" stroke="#2C3E50" stroke-width="2"/>
+              </svg>
+            </div>
+            <div style="font-size: 16pt; font-weight: 900; color: #C8B273; text-shadow: 0 3px 6px rgba(0,0,0,0.5); letter-spacing: 0.5px;">
+              PHOTO DOCUMENTATION
+            </div>
+          </div>
+          <div style="font-size: 11pt; color: #ffffff; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4); font-weight: 600; text-align: center; margin-top: 20px;">
+            Comprehensive visual documentation and technical photos
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty cell for spacing -->
+      <div style="display: table-cell; width: 50%;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==========================================
+     SECTION 03: PROPERTY OVERVIEW - ULTRA-VIBRANT
+     ========================================== -->
+<div style="page-break-before: always;"></div>
+
+<div style="
+    background: linear-gradient(135deg,
+        rgba(244, 228, 188, 0.15) 0%,
+        rgba(212, 175, 55, 0.12) 50%,
+        rgba(200, 178, 115, 0.08) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #C8B273;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(200, 178, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    page-break-inside: avoid;
+" id="property-overview">
+
+  <!-- Shimmer Animation Overlay -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+
+  <!-- Section Header with Icon -->
+  <div style="display: table; width: 100%; margin-bottom: 20px; position: relative; z-index: 2;">
+    <div style="display: table-cell; width: 52px; vertical-align: middle; text-align: center;">
+      <div style="
+          width: 44px;
+          height: 44px;
+          background: linear-gradient(135deg, #C8B273, #D4AF37);
+          border-radius: 10px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+      ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+                stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+          <path d="M9 22V12H15V22" stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display: table-cell; vertical-align: middle; padding-left: 14px;">
+      <div style="
+          font-size: 20pt;
+          font-weight: 900;
+          color: #C8B273;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          margin: 0;
+      ">
+        PROPERTY OVERVIEW
+      </div>
+      <div style="font-size: 10pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        Complete Building Assessment
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Details Grid -->
+  <div style="position: relative; z-index: 2;">
+
+    <!-- Address Card (Full Width) -->
+    <div style="margin-bottom: 16px;">
+      <div style="
+          background: rgba(200, 178, 115, 0.15);
+          border: 1px solid #C8B273;
+          border-radius: 10px;
+          padding: 14px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      ">
+        <div style="
+            font-size: 10pt;
+            color: #C8B273;
+            font-weight: 800;
+            margin-bottom: 6px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        ">
+          PROPERTY ADDRESS
+        </div>
+        <div style="
+            font-size: 14pt;
+            color: #ffffff;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            line-height: 1.4;
+        ">
+          <%= data.property?.address || 'N/A' %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Type & Age Row -->
+    <div style="display: table; width: 100%; table-layout: fixed; border-spacing: 12px; margin-bottom: 12px;">
+      <div style="display: table-row;">
+        <!-- Property Type -->
+        <div style="display: table-cell; width: 50%; vertical-align: top;">
+          <div style="
+              background: rgba(200, 178, 115, 0.15);
+              border: 1px solid #C8B273;
+              border-radius: 10px;
+              padding: 14px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          ">
+            <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+              PROPERTY TYPE
+            </div>
+            <div style="font-size: 12pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+              <%= data.property?.type || 'N/A' %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Construction Age -->
+        <div style="display: table-cell; width: 50%; vertical-align: top;">
+          <div style="
+              background: rgba(200, 178, 115, 0.15);
+              border: 1px solid #C8B273;
+              border-radius: 10px;
+              padding: 14px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          ">
+            <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+              CONSTRUCTION AGE
+            </div>
+            <div style="font-size: 12pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+              <%= data.property?.age || 'N/A' %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Building Fabric Section -->
+    <div style="margin-top: 20px;">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          border-bottom: 2px solid rgba(200, 178, 115, 0.3);
+          padding-bottom: 8px;
+      ">
+        BUILDING FABRIC
+      </h3>
+
+      <!-- 4-Column Grid -->
+      <div style="display: table; width: 100%; table-layout: fixed; border-spacing: 12px;">
+        <div style="display: table-row;">
+          <!-- Wall Construction -->
+          <div style="display: table-cell; width: 25%; vertical-align: top;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+                WALL CONSTRUCTION
+              </div>
+              <div style="font-size: 10pt; color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+                <%= data.property?.wallConstruction || 'N/A' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Roof Type -->
+          <div style="display: table-cell; width: 25%; vertical-align: top;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+                ROOF TYPE
+              </div>
+              <div style="font-size: 10pt; color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+                <%= data.property?.roofConstruction || 'N/A' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floor Construction -->
+          <div style="display: table-cell; width: 25%; vertical-align: top;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+                FLOOR CONSTRUCTION
+              </div>
+              <div style="font-size: 10pt; color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+                <%= data.property?.floorConstruction || 'N/A' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Glazing Type -->
+          <div style="display: table-cell; width: 25%; vertical-align: top;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+                GLAZING TYPE
+              </div>
+              <div style="font-size: 10pt; color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+                <%= data.property?.glazingType || 'N/A' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Systems Section -->
+    <div style="margin-top: 20px;">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          border-bottom: 2px solid rgba(200, 178, 115, 0.3);
+          padding-bottom: 8px;
+      ">
+        CURRENT SYSTEMS
+      </h3>
+
+      <!-- 3-Column Grid -->
+      <div style="display: table; width: 100%; table-layout: fixed; border-spacing: 12px;">
+        <div style="display: table-row;">
+          <!-- Heating -->
+          <div style="display: table-cell; width: 33.33%; vertical-align: top;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+                CURRENT HEATING
+              </div>
+              <div style="font-size: 11pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+                <%= data.property?.currentHeating || 'N/A' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Electrical Supply -->
+          <div style="display: table-cell; width: 33.33%; vertical-align: top;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+                ELECTRICAL SUPPLY
+              </div>
+              <div style="font-size: 11pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+                <%= data.property?.electricalSupply || 'N/A' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Consumer Unit -->
+          <div style="display: table-cell; width: 33.33%; vertical-align: top;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 0.5px; text-transform: uppercase;">
+                CONSUMER UNIT
+              </div>
+              <div style="font-size: 11pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4); line-height: 1.3;">
+                <%= data.property?.consumerUnit || 'N/A' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Photos -->
+    <% if (data.photos?.property && data.photos.property.length > 0) { %>
+      <div style="margin-top: 24px;">
+        <h3 style="
+            font-size: 16pt;
+            font-weight: 900;
+            color: #C8B273;
+            margin-bottom: 14px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        ">
+          PROPERTY PHOTOS
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;">
+          <% data.photos.property.slice(0, 4).forEach((photo, index) => { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border-radius: 12px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow:
+                    0 8px 24px rgba(0, 0, 0, 0.15),
+                    0 2px 8px rgba(44, 62, 80, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            ">
+              <img src="<%= photo.url %>" alt="Property Photo <%= index + 1 %>" style="
+                  width: 100%;
+                  height: 240px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 8px;
+                  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+              " />
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    <% } %>
+
+  </div>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<!-- ==========================================
+     SECTION 03B: HEAT LOSS SUMMARY - ULTRA-VIBRANT
+     ========================================== -->
+<div style="
+    background: linear-gradient(135deg,
+        rgba(244, 228, 188, 0.15) 0%,
+        rgba(212, 175, 55, 0.12) 50%,
+        rgba(200, 178, 115, 0.08) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #C8B273;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(200, 178, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+" id="heat-loss-summary">
+
+  <!-- Shimmer Animation -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+
+  <!-- Section Header -->
+  <div style="display: table; width: 100%; margin-bottom: 20px; position: relative; z-index: 2;">
+    <div style="display: table-cell; width: 52px; vertical-align: middle; text-align: center;">
+      <div style="
+          width: 44px;
+          height: 44px;
+          background: linear-gradient(135deg, #C8B273, #D4AF37);
+          border-radius: 10px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+      ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H17C18.1046 3 19 3.89543 19 5V19C19 20.1046 18.1046 21 17 21Z"
+                stroke="#2C3E50" stroke-width="2.5"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display: table-cell; vertical-align: middle; padding-left: 14px;">
+      <div style="
+          font-size: 20pt;
+          font-weight: 900;
+          color: #C8B273;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          margin: 0;
+      ">
+        HEAT LOSS SUMMARY
+      </div>
+      <div style="font-size: 10pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        Comprehensive Heat Loss Analysis
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; z-index: 2;">
+
+    <!-- Floor Plan Photo -->
+    <% if (data.heatLoss?.floorPlan && data.heatLoss.floorPlan.length > 0) { %>
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h3 style="
+            font-size: 16pt;
+            font-weight: 900;
+            color: #C8B273;
+            margin-bottom: 14px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        ">
+          FLOOR PLAN
+        </h3>
+        <div style="
+            background: linear-gradient(135deg,
+                rgba(244, 228, 188, 0.08) 0%,
+                rgba(212, 175, 55, 0.05) 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 14px;
+            border: 2px solid #C8B273;
+            padding: 8px;
+            box-shadow:
+                0 12px 36px rgba(0, 0, 0, 0.2),
+                0 4px 12px rgba(44, 62, 80, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: inline-block;
+            max-width: 100%;
+        ">
+          <img src="<%= data.heatLoss.floorPlan[0].url %>" alt="Floor Plan" style="
+              width: 100%;
+              max-width: 800px;
+              height: auto;
+              display: block;
+              border-radius: 10px;
+              box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+          " />
+        </div>
+      </div>
+    <% } %>
+
+    <!-- ROOM ASSESSMENT TABLE -->
+    <% if (data.rooms && data.rooms.length > 0) { %>
+      <div style="margin-bottom: 24px;">
+        <h3 style="
+            font-size: 18pt;
+            font-weight: 900;
+            color: #C8B273;
+            margin-bottom: 16px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-align: center;
+        ">
+          ROOM ASSESSMENT OVERVIEW
+        </h3>
+
+        <table style="
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        ">
+          <!-- Table Header -->
+          <thead>
+            <tr style="background: linear-gradient(135deg, #C8B273 0%, #D4AF37 100%);">
+              <th style="
+                  padding: 14px 10px;
+                  text-align: left;
+                  font-size: 10pt;
+                  font-weight: 900;
+                  color: #2C3E50;
+                  border-right: 2px solid rgba(44, 62, 80, 0.2);
+                  width: 20%;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+              ">ROOM</th>
+              <th style="
+                  padding: 14px 10px;
+                  text-align: center;
+                  font-size: 10pt;
+                  font-weight: 900;
+                  color: #2C3E50;
+                  border-right: 2px solid rgba(44, 62, 80, 0.2);
+                  width: 15%;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+              ">HEIGHT</th>
+              <th style="
+                  padding: 14px 10px;
+                  text-align: center;
+                  font-size: 10pt;
+                  font-weight: 900;
+                  color: #2C3E50;
+                  border-right: 2px solid rgba(44, 62, 80, 0.2);
+                  width: 20%;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+              ">FLOOR</th>
+              <th style="
+                  padding: 14px 10px;
+                  text-align: center;
+                  font-size: 10pt;
+                  font-weight: 900;
+                  color: #2C3E50;
+                  border-right: 2px solid rgba(44, 62, 80, 0.2);
+                  width: 20%;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+              ">WINDOWS</th>
+              <th style="
+                  padding: 14px 10px;
+                  text-align: center;
+                  font-size: 10pt;
+                  font-weight: 900;
+                  color: #2C3E50;
+                  border-right: 2px solid rgba(44, 62, 80, 0.2);
+                  width: 15%;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+              ">RADS</th>
+              <th style="
+                  padding: 14px 10px;
+                  text-align: center;
+                  font-size: 10pt;
+                  font-weight: 900;
+                  color: #2C3E50;
+                  width: 10%;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+              ">DOORS</th>
+            </tr>
+          </thead>
+
+          <!-- Table Body -->
+          <tbody>
+            <% data.rooms.forEach((room, roomIndex) => { %>
+              <%
+                const rowBg = roomIndex % 2 === 0
+                  ? 'rgba(200, 178, 115, 0.15)'
+                  : 'rgba(200, 178, 115, 0.08)';
+                const roomName = room.name || `Room ${room.index}`;
+                const floorLevel = room.floorLevel || 'Ground';
+                const ceilingHeight = room.ceilingHeight ? (parseFloat(room.ceilingHeight) / 1000).toFixed(2) + 'm' : 'N/A';
+                const floorMaterial = room.floorMaterial || 'N/A';
+                const windowCount = (room.windows && room.windows.length) || 0;
+                const radiatorCount = (room.radiators && room.radiators.length) || 0;
+                const doorPresent = room.doorPresent ? 'Yes' : 'No';
+              %>
+              <tr style="background: <%= rowBg %>; border-bottom: 1px solid rgba(200, 178, 115, 0.2);">
+                <!-- Room Name with Navigation Link -->
+                <td style="padding: 12px 10px; border-right: 2px solid rgba(200, 178, 115, 0.2); vertical-align: top;">
+                  <a href="#room-<%= room.index %>" style="
+                      color: #C8B273;
+                      text-decoration: none;
+                      font-weight: 800;
+                      font-size: 11pt;
+                      display: block;
+                      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+                  ">
+                    <%= roomName %>
+                  </a>
+                  <div style="
+                      font-size: 9pt;
+                      color: #ffffff;
+                      margin-top: 4px;
+                      font-weight: 600;
+                      text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+                  ">
+                    <%= floorLevel %> Floor
+                  </div>
+                </td>
+
+                <!-- Ceiling Height -->
+                <td style="padding: 12px 10px; border-right: 2px solid rgba(200, 178, 115, 0.2); text-align: center; vertical-align: top;">
+                  <div style="font-size: 12pt; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                    <%= ceilingHeight %>
+                  </div>
+                </td>
+
+                <!-- Floor Material -->
+                <td style="padding: 12px 10px; border-right: 2px solid rgba(200, 178, 115, 0.2); text-align: center; vertical-align: top;">
+                  <div style="font-size: 10pt; font-weight: 600; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                    <%= floorMaterial %>
+                  </div>
+                </td>
+
+                <!-- Windows -->
+                <td style="padding: 12px 8px; border-right: 2px solid rgba(200, 178, 115, 0.2); vertical-align: top;">
+                  <% if (windowCount > 0) { %>
+                    <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                      <%= windowCount %> Window<%= windowCount > 1 ? 's' : '' %>
+                    </div>
+                    <% room.windows.slice(0, 2).forEach((window) => { %>
+                      <div style="font-size: 9pt; color: #ffffff; font-weight: 600; margin-bottom: 4px; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                        <%= window.width || 'N/A' %>×<%= window.height || 'N/A' %>mm
+                        <div style="font-size: 8pt; color: #C8B273;"><%= window.type || 'N/A' %></div>
+                      </div>
+                    <% }); %>
+                    <% if (windowCount > 2) { %>
+                      <div style="font-size: 8pt; color: #C8B273; font-weight: 700; text-align: center;">+ <%= windowCount - 2 %> more</div>
+                    <% } %>
+                  <% } else { %>
+                    <div style="font-size: 10pt; color: #ffffff; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">None</div>
+                  <% } %>
+                </td>
+
+                <!-- Radiators -->
+                <td style="padding: 12px 8px; border-right: 2px solid rgba(200, 178, 115, 0.2); vertical-align: top; text-align: center;">
+                  <% if (radiatorCount > 0) { %>
+                    <div style="font-size: 16pt; color: #C8B273; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= radiatorCount %></div>
+                    <div style="font-size: 8pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                      <%= room.radiators[0].type || 'N/A' %>
+                    </div>
+                  <% } else { %>
+                    <div style="font-size: 12pt; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">0</div>
+                  <% } %>
+                </td>
+
+                <!-- Doors -->
+                <td style="padding: 12px 8px; text-align: center; vertical-align: top;">
+                  <div style="font-size: 12pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= doorPresent %></div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+    <!-- Heat Loss Calculations -->
+    <div style="margin-top: 24px;">
+      <h3 style="
+          font-size: 18pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 20px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          text-align: center;
+      ">
+        FABRIC HEAT LOSS ANALYSIS
+      </h3>
+
+      <!-- 3x2 Grid for Heat Loss Types -->
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
+        <!-- Wall Heat Loss -->
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        ">
+          <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+            Wall Heat Loss
+          </div>
+          <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.heatLoss?.wallLoss || 'N/A' %> <span style="font-size: 14pt;">W</span>
+          </div>
+        </div>
+
+        <!-- Roof Heat Loss -->
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        ">
+          <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+            Roof Heat Loss
+          </div>
+          <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.heatLoss?.roofLoss || 'N/A' %> <span style="font-size: 14pt;">W</span>
+          </div>
+        </div>
+
+        <!-- Floor Heat Loss -->
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        ">
+          <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+            Floor Heat Loss
+          </div>
+          <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.heatLoss?.floorLoss || 'N/A' %> <span style="font-size: 14pt;">W</span>
+          </div>
+        </div>
+
+        <!-- Window Heat Loss -->
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        ">
+          <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+            Window Heat Loss
+          </div>
+          <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.heatLoss?.windowLoss || 'N/A' %> <span style="font-size: 14pt;">W</span>
+          </div>
+        </div>
+
+        <!-- Door Heat Loss -->
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        ">
+          <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+            Door Heat Loss
+          </div>
+          <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.heatLoss?.doorLoss || 'N/A' %> <span style="font-size: 14pt;">W</span>
+          </div>
+        </div>
+
+        <!-- Ventilation Loss -->
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 2px solid #C8B273;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        ">
+          <div style="font-size: 10pt; color: #C8B273; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+            Ventilation Loss
+          </div>
+          <div style="font-size: 24pt; color: #ffffff; font-weight: 900; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.heatLoss?.ventilationLoss || 'N/A' %> <span style="font-size: 14pt;">W</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Heat Loss & Recommended Capacity (HERO CARDS) -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Total Heat Loss -->
+        <div style="
+            background: linear-gradient(135deg, rgba(244, 228, 188, 0.2) 0%, rgba(212, 175, 55, 0.15) 100%);
+            border: 3px solid #C8B273;
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 30px rgba(200, 178, 115, 0.2);
+            position: relative;
+            overflow: hidden;
+        ">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.15), transparent); animation: shimmer 3s infinite;"></div>
+          <div style="font-size: 12pt; color: #C8B273; font-weight: 900; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.4); position: relative; z-index: 2;">
+            TOTAL HEAT LOSS
+          </div>
+          <div style="font-size: 36pt; color: #ffffff; font-weight: 900; text-shadow: 0 4px 8px rgba(0,0,0,0.6); position: relative; z-index: 2;">
+            <%= data.heatLoss?.totalHeatLoss || 'N/A' %> <span style="font-size: 20pt;">W</span>
+          </div>
+        </div>
+
+        <!-- Recommended Capacity -->
+        <div style="
+            background: linear-gradient(135deg, rgba(244, 228, 188, 0.2) 0%, rgba(212, 175, 55, 0.15) 100%);
+            border: 3px solid #C8B273;
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 30px rgba(200, 178, 115, 0.2);
+            position: relative;
+            overflow: hidden;
+        ">
+          <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.15), transparent); animation: shimmer 3s infinite;"></div>
+          <div style="font-size: 12pt; color: #C8B273; font-weight: 900; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.4); position: relative; z-index: 2;">
+            RECOMMENDED CAPACITY
+          </div>
+          <div style="font-size: 36pt; color: #ffffff; font-weight: 900; text-shadow: 0 4px 8px rgba(0,0,0,0.6); position: relative; z-index: 2;">
+            <%= data.heatLoss?.recommendedCapacity || 'N/A' %> <span style="font-size: 20pt;">W</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<!-- ==========================================
+     SECTION 04: ROOM ASSESSMENT - ULTRA-VIBRANT
+     ========================================== -->
+<div style="
+    background: linear-gradient(135deg,
+        rgba(244, 228, 188, 0.15) 0%,
+        rgba(212, 175, 55, 0.12) 50%,
+        rgba(200, 178, 115, 0.08) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #C8B273;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(200, 178, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+" id="room-assessment">
+
+  <!-- Shimmer Animation -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+
+  <!-- Section Header -->
+  <div style="display: table; width: 100%; margin-bottom: 20px; position: relative; z-index: 2;">
+    <div style="display: table-cell; width: 52px; vertical-align: middle; text-align: center;">
+      <div style="
+          width: 44px;
+          height: 44px;
+          background: linear-gradient(135deg, #C8B273, #D4AF37);
+          border-radius: 10px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+      ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="#2C3E50" stroke-width="2.5"/>
+          <path d="M9 9H15" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+          <path d="M9 15H15" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display: table-cell; vertical-align: middle; padding-left: 14px;">
+      <div style="
+          font-size: 20pt;
+          font-weight: 900;
+          color: #C8B273;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          margin: 0;
+      ">
+        ROOM ASSESSMENT
+      </div>
+      <div style="font-size: 10pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        Detailed Room-by-Room Analysis
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; z-index: 2;">
+    <% if (data.rooms && data.rooms.length > 0) { %>
+      <% data.rooms.forEach((room, roomIndex) => { %>
+
+        <% if (roomIndex > 0) { %>
+          <div style="page-break-before: always;"></div>
+        <% } %>
+
+        <!-- Individual Room Card -->
+        <div id="room-<%= room.index %>" style="
+            background: rgba(200, 178, 115, 0.12);
+            border: 2px solid #C8B273;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        ">
+
+          <!-- Room Header -->
+          <div style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 16px;
+              border-bottom: 2px solid rgba(200, 178, 115, 0.3);
+              padding-bottom: 12px;
+          ">
+            <div>
+              <h3 style="
+                  font-size: 18pt;
+                  font-weight: 900;
+                  color: #C8B273;
+                  margin: 0;
+                  text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+                  letter-spacing: 0.5px;
+              "><%= room.name || `Room ${room.index}` %></h3>
+              <div style="
+                  font-size: 10pt;
+                  color: #ffffff;
+                  font-weight: 600;
+                  margin-top: 4px;
+                  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+              "><%= room.floorLevel || 'Ground' %> Floor</div>
+            </div>
+            <div style="
+                background: linear-gradient(135deg, #C8B273, #D4AF37);
+                padding: 10px 18px;
+                border-radius: 8px;
+                font-size: 14pt;
+                font-weight: 900;
+                color: #2C3E50;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            ">
+              Room <%= room.index %>
+            </div>
+          </div>
+
+          <!-- Room Details Grid -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                text-align: center;
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+                Ceiling Height
+              </div>
+              <div style="font-size: 14pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                <%= room.ceilingHeight ? (parseFloat(room.ceilingHeight) / 1000).toFixed(2) + 'm' : 'N/A' %>
+              </div>
+            </div>
+
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                text-align: center;
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+                Floor Material
+              </div>
+              <div style="font-size: 14pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                <%= room.floorMaterial || 'N/A' %>
+              </div>
+            </div>
+
+            <div style="
+                background: rgba(200, 178, 115, 0.15);
+                border: 1px solid #C8B273;
+                border-radius: 8px;
+                padding: 12px;
+                text-align: center;
+            ">
+              <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+                Door Present
+              </div>
+              <div style="font-size: 14pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                <%= room.doorPresent ? 'Yes' : 'No' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Windows Section -->
+          <% if (room.windows && room.windows.length > 0) { %>
+            <div style="margin-top: 16px;">
+              <h4 style="
+                  font-size: 13pt;
+                  font-weight: 800;
+                  color: #C8B273;
+                  margin-bottom: 12px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+              ">Windows (<%= room.windows.length %>)</h4>
+              <div style="
+                  background: rgba(200, 178, 115, 0.08);
+                  border: 1px solid rgba(200, 178, 115, 0.2);
+                  border-radius: 8px;
+                  padding: 12px;
+              ">
+                <% room.windows.forEach((window, wIndex) => { %>
+                  <div style="<%= wIndex > 0 ? 'margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(200, 178, 115, 0.3);' : '' %>">
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                      <div>
+                        <span style="color: #C8B273; font-weight: 700; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Size:</span>
+                        <span style="color: #ffffff; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= window.width || 'N/A' %>mm × <%= window.height || 'N/A' %>mm</span>
+                      </div>
+                      <div>
+                        <span style="color: #C8B273; font-weight: 700; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Type:</span>
+                        <span style="color: #ffffff; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= window.type || 'N/A' %></span>
+                      </div>
+                      <div>
+                        <span style="color: #C8B273; font-weight: 700; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Frame:</span>
+                        <span style="color: #ffffff; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= window.frame || 'N/A' %></span>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Radiators Section -->
+          <% if (room.radiators && room.radiators.length > 0) { %>
+            <div style="margin-top: 16px;">
+              <h4 style="
+                  font-size: 13pt;
+                  font-weight: 800;
+                  color: #C8B273;
+                  margin-bottom: 12px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+              ">Radiators (<%= room.radiators.length %>)</h4>
+              <div style="
+                  background: rgba(200, 178, 115, 0.08);
+                  border: 1px solid rgba(200, 178, 115, 0.2);
+                  border-radius: 8px;
+                  padding: 12px;
+              ">
+                <% room.radiators.forEach((radiator, rIndex) => { %>
+                  <div style="<%= rIndex > 0 ? 'margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(200, 178, 115, 0.3);' : '' %>">
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                      <div>
+                        <span style="color: #C8B273; font-weight: 700; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Type:</span>
+                        <span style="color: #ffffff; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= radiator.type || 'N/A' %></span>
+                      </div>
+                      <div>
+                        <span style="color: #C8B273; font-weight: 700; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Location:</span>
+                        <span style="color: #ffffff; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= radiator.location || 'N/A' %></span>
+                      </div>
+                      <div>
+                        <span style="color: #C8B273; font-weight: 700; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">TRV:</span>
+                        <span style="color: #ffffff; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= radiator.trvPresent ? 'Yes' : 'No' %></span>
+                      </div>
+                      <div>
+                        <span style="color: #C8B273; font-weight: 700; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Size:</span>
+                        <span style="color: #ffffff; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= radiator.width ? (parseFloat(radiator.width) / 1000).toFixed(2) + 'm' : 'N/A' %> × <%= radiator.height ? (parseFloat(radiator.height) / 1000).toFixed(2) + 'm' : 'N/A' %></span>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Room Photos -->
+          <% if (room.photos && room.photos.length > 0) { %>
+            <div style="margin-top: 16px;">
+              <h4 style="
+                  font-size: 13pt;
+                  font-weight: 800;
+                  color: #C8B273;
+                  margin-bottom: 12px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+              ">Room Photos</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <% room.photos.forEach((photo, pIndex) => { %>
+                  <div style="
+                      background: linear-gradient(135deg,
+                          rgba(244, 228, 188, 0.08) 0%,
+                          rgba(212, 175, 55, 0.05) 100%);
+                      backdrop-filter: blur(8px);
+                      border-radius: 10px;
+                      border: 2px solid #C8B273;
+                      padding: 6px;
+                      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                  ">
+                    <img src="<%= photo.url %>" alt="Room Photo <%= pIndex + 1 %>" style="
+                        width: 100%;
+                        height: 200px;
+                        object-fit: cover;
+                        display: block;
+                        border-radius: 6px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                    " />
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+          <% } %>
+
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div style="
+          text-align: center;
+          padding: 40px;
+          color: #C8B273;
+          font-size: 14pt;
+          font-weight: 700;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      ">
+        No room assessment data available
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<!-- ==========================================
+     SECTION 05: HEATING SYSTEMS - ULTRA-VIBRANT
+     ========================================== -->
+<div style="
+    background: linear-gradient(135deg,
+        rgba(244, 228, 188, 0.15) 0%,
+        rgba(212, 175, 55, 0.12) 50%,
+        rgba(200, 178, 115, 0.08) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #C8B273;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(200, 178, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+" id="heating-systems">
+
+  <!-- Shimmer Animation -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+
+  <!-- Section Header -->
+  <div style="display: table; width: 100%; margin-bottom: 20px; position: relative; z-index: 2;">
+    <div style="display: table-cell; width: 52px; vertical-align: middle; text-align: center;">
+      <div style="
+          width: 44px;
+          height: 44px;
+          background: linear-gradient(135deg, #C8B273, #D4AF37);
+          border-radius: 10px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+      ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2V6M12 18V22M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="3" stroke="#2C3E50" stroke-width="2.5"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display: table-cell; vertical-align: middle; padding-left: 14px;">
+      <div style="
+          font-size: 20pt;
+          font-weight: 900;
+          color: #C8B273;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          margin: 0;
+      ">
+        HEATING SYSTEMS
+      </div>
+      <div style="font-size: 10pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        Current System Analysis
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; z-index: 2;">
+
+    <!-- Boiler Information -->
+    <div style="
+        background: rgba(200, 178, 115, 0.12);
+        border: 2px solid #C8B273;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    ">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+      ">Boiler Information</h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Make</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.heating?.boilerMake || 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Model</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.heating?.boilerModel || 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Age</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.heating?.boilerAge ? data.heating.boilerAge + ' years' : 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Condition</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.heating?.boilerCondition || 'N/A' %></div>
+        </div>
+      </div>
+
+      <!-- Boiler Photos -->
+      <% if (data.photos?.boiler && data.photos.boiler.length > 0) { %>
+        <h4 style="
+            font-size: 13pt;
+            font-weight: 800;
+            color: #C8B273;
+            margin-top: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        ">Boiler Photos</h4>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <% data.photos.boiler.slice(0, 4).forEach((photo, index) => { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                border-radius: 10px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            ">
+              <img src="<%= photo.url %>" alt="Boiler Photo <%= index + 1 %>" style="
+                  width: 100%;
+                  height: 180px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+              " />
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Hot Water Cylinder -->
+    <div style="
+        background: rgba(200, 178, 115, 0.12);
+        border: 2px solid #C8B273;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    ">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+      ">Hot Water Cylinder</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Type</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.heating?.cylinderType || 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Capacity</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.heating?.cylinderSize ? data.heating.cylinderSize + 'L' : 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Condition</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.heating?.cylinderCondition || 'N/A' %></div>
+        </div>
+      </div>
+
+      <!-- Cylinder Photos -->
+      <% if (data.photos?.cylinder && data.photos.cylinder.length > 0) { %>
+        <h4 style="
+            font-size: 13pt;
+            font-weight: 800;
+            color: #C8B273;
+            margin-top: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        ">Cylinder Photos</h4>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <% data.photos.cylinder.slice(0, 4).forEach((photo, index) => { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                border-radius: 10px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            ">
+              <img src="<%= photo.url %>" alt="Cylinder Photo <%= index + 1 %>" style="
+                  width: 100%;
+                  height: 180px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+              " />
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Controls & Pipework -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div style="
+          background: rgba(200, 178, 115, 0.12);
+          border: 1px solid #C8B273;
+          border-radius: 8px;
+          padding: 14px;
+      ">
+        <h4 style="font-size: 13pt; font-weight: 800; color: #C8B273; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">Heating Controls</h4>
+        <div style="font-size: 12pt; color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4);"><%= data.heating?.heatingControls || 'N/A' %></div>
+      </div>
+
+      <div style="
+          background: rgba(200, 178, 115, 0.12);
+          border: 1px solid #C8B273;
+          border-radius: 8px;
+          padding: 14px;
+      ">
+        <h4 style="font-size: 13pt; font-weight: 800; color: #C8B273; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">Pipework</h4>
+        <div style="font-size: 11pt; color: #ffffff; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+          <div>Material: <%= data.heating?.pipeworkMaterial || 'N/A' %></div>
+          <div style="margin-top: 4px;">Size: <%= data.heating?.pipeworkSize || 'N/A' %></div>
+          <div style="margin-top: 4px;">Condition: <%= data.heating?.pipeworkCondition || 'N/A' %></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<!-- ==========================================
+     SECTION 06: ELECTRICAL SYSTEMS - ULTRA-VIBRANT
+     ========================================== -->
+<div style="
+    background: linear-gradient(135deg,
+        rgba(244, 228, 188, 0.15) 0%,
+        rgba(212, 175, 55, 0.12) 50%,
+        rgba(200, 178, 115, 0.08) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #C8B273;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(200, 178, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+" id="electrical-systems">
+
+  <!-- Shimmer Animation -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+
+  <!-- Section Header -->
+  <div style="display: table; width: 100%; margin-bottom: 20px; position: relative; z-index: 2;">
+    <div style="display: table-cell; width: 52px; vertical-align: middle; text-align: center;">
+      <div style="
+          width: 44px;
+          height: 44px;
+          background: linear-gradient(135deg, #C8B273, #D4AF37);
+          border-radius: 10px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+      ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display: table-cell; vertical-align: middle; padding-left: 14px;">
+      <div style="
+          font-size: 20pt;
+          font-weight: 900;
+          color: #C8B273;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          margin: 0;
+      ">
+        ELECTRICAL SYSTEMS
+      </div>
+      <div style="font-size: 10pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        Complete Electrical Assessment
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; z-index: 2;">
+
+    <!-- Consumer Unit -->
+    <div style="
+        background: rgba(200, 178, 115, 0.12);
+        border: 2px solid #C8B273;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    ">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+      ">Consumer Unit</h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Type</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.electrical?.consumerUnitType || 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">RCD Protection</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.electrical?.rcdProtection ? 'Yes' : 'No' %></div>
+        </div>
+      </div>
+
+      <!-- Consumer Unit Photos -->
+      <% if (data.photos?.consumerUnit && data.photos.consumerUnit.length > 0) { %>
+        <h4 style="
+            font-size: 13pt;
+            font-weight: 800;
+            color: #C8B273;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        ">Consumer Unit Photos</h4>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <% data.photos.consumerUnit.slice(0, 4).forEach((photo, index) => { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                border-radius: 10px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            ">
+              <img src="<%= photo.url %>" alt="Consumer Unit <%= index + 1 %>" style="
+                  width: 100%;
+                  height: 180px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+              " />
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Supply Information -->
+    <div style="
+        background: rgba(200, 178, 115, 0.12);
+        border: 2px solid #C8B273;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    ">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+      ">Supply Information</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Phase Type</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.electrical?.phaseType || 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Main Fuse</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.electrical?.mainFuseSize ? data.electrical.mainFuseSize + 'A' : 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Available Capacity</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.electrical?.availableCapacity ? data.electrical.availableCapacity + 'A' : 'N/A' %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meter Information -->
+    <div style="
+        background: rgba(200, 178, 115, 0.12);
+        border: 2px solid #C8B273;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    ">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+      ">Meter Information</h3>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Meter Type</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.electrical?.meterType || 'N/A' %></div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Location</div>
+          <div style="font-size: 13pt; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"><%= data.electrical?.meterLocation || 'N/A' %></div>
+        </div>
+      </div>
+
+      <!-- Meter Photos -->
+      <% if (data.photos?.meter && data.photos.meter.length > 0) { %>
+        <h4 style="
+            font-size: 13pt;
+            font-weight: 800;
+            color: #C8B273;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        ">Meter Photos</h4>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <% data.photos.meter.slice(0, 4).forEach((photo, index) => { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                border-radius: 10px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            ">
+              <img src="<%= photo.url %>" alt="Meter <%= index + 1 %>" style="
+                  width: 100%;
+                  height: 180px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+              " />
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- DNO Upgrade (Conditional Styling) -->
+    <div style="
+        background: <%= data.electrical?.dnoUpgradeRequired ? 'rgba(255, 100, 100, 0.15)' : 'rgba(100, 255, 100, 0.15)' %>;
+        border: 3px solid <%= data.electrical?.dnoUpgradeRequired ? '#FF4444' : '#44FF44' %>;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 8px 24px <%= data.electrical?.dnoUpgradeRequired ? 'rgba(255, 68, 68, 0.25)' : 'rgba(68, 255, 68, 0.25)' %>;
+    ">
+      <h3 style="
+          font-size: 15pt;
+          font-weight: 900;
+          color: <%= data.electrical?.dnoUpgradeRequired ? '#FF6666' : '#66FF66' %>;
+          margin-bottom: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      ">DNO Upgrade Required</h3>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 11pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Upgrade Required:</div>
+          <div style="font-size: 20pt; color: #ffffff; font-weight: 900; margin-top: 6px; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.electrical?.dnoUpgradeRequired ? 'YES' : 'NO' %>
+          </div>
+        </div>
+
+        <% if (data.electrical?.dnoUpgradeRequired && data.electrical?.estimatedDnoCost) { %>
+          <div style="text-align: right;">
+            <div style="font-size: 11pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">Estimated Cost:</div>
+            <div style="font-size: 20pt; color: #C8B273; font-weight: 900; margin-top: 6px; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+              £<%= data.electrical.estimatedDnoCost %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<!-- ==========================================
+     SECTION 07: ASHP ASSESSMENT - ULTRA-VIBRANT
+     ========================================== -->
+<div style="
+    background: linear-gradient(135deg,
+        rgba(244, 228, 188, 0.15) 0%,
+        rgba(212, 175, 55, 0.12) 50%,
+        rgba(200, 178, 115, 0.08) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #C8B273;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(200, 178, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+" id="ashp-assessment">
+
+  <!-- Shimmer Animation -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+
+  <!-- Section Header -->
+  <div style="display: table; width: 100%; margin-bottom: 20px; position: relative; z-index: 2;">
+    <div style="display: table-cell; width: 52px; vertical-align: middle; text-align: center;">
+      <div style="
+          width: 44px;
+          height: 44px;
+          background: linear-gradient(135deg, #C8B273, #D4AF37);
+          border-radius: 10px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+      ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M14 2V8H20" stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display: table-cell; vertical-align: middle; padding-left: 14px;">
+      <div style="
+          font-size: 20pt;
+          font-weight: 900;
+          color: #C8B273;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          margin: 0;
+      ">
+        ASHP ASSESSMENT
+      </div>
+      <div style="font-size: 10pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        Air Source Heat Pump Recommendations
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; z-index: 2;">
+
+    <!-- System Recommendation (Hero Card) -->
+    <div style="
+        background: linear-gradient(135deg, rgba(100, 255, 100, 0.2) 0%, rgba(100, 255, 100, 0.1) 100%);
+        border: 3px solid #44FF44;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 12px 30px rgba(68, 255, 68, 0.3);
+        position: relative;
+        overflow: hidden;
+    ">
+      <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(100, 255, 100, 0.15), transparent); animation: shimmer 3s infinite;"></div>
+
+      <h3 style="
+          font-size: 18pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 16px;
+          text-transform: uppercase;
+          text-align: center;
+          letter-spacing: 0.5px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          position: relative;
+          z-index: 2;
+      ">Recommended System</h3>
+
+      <div style="text-align: center; margin-bottom: 20px; position: relative; z-index: 2;">
+        <div style="font-size: 16pt; color: #ffffff; font-weight: 700; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+          <%= data.ashp?.recommendedSystem || 'N/A' %>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; position: relative; z-index: 2;">
+        <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 14px; text-align: center;">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Capacity</div>
+          <div style="font-size: 18pt; color: #ffffff; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+            <%= data.ashp?.systemCapacity || 'N/A' %> <span style="font-size: 11pt;">kW</span>
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 14px; text-align: center;">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Flow Temp</div>
+          <div style="font-size: 18pt; color: #ffffff; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+            <%= data.ashp?.flowTemperature || 'N/A' %> <span style="font-size: 11pt;">°C</span>
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 14px; text-align: center;">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">SCOP</div>
+          <div style="font-size: 18pt; color: #ffffff; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+            <%= data.ashp?.scopEstimate || 'N/A' %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location & Clearances -->
+    <div style="
+        background: rgba(200, 178, 115, 0.12);
+        border: 2px solid #C8B273;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+    ">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: #C8B273;
+          margin-bottom: 14px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+      ">Location & Clearances</h3>
+
+      <div style="
+          background: rgba(200, 178, 115, 0.15);
+          border: 1px solid #C8B273;
+          border-radius: 8px;
+          padding: 12px;
+          margin-bottom: 12px;
+      ">
+        <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Outdoor Unit Location</div>
+        <div style="font-size: 12pt; color: #ffffff; font-weight: 600; line-height: 1.4; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+          <%= data.ashp?.outdoorUnitLocation || 'N/A' %>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Distance to Boundary</div>
+          <div style="font-size: 18pt; color: #ffffff; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+            <%= data.ashp?.nearestBoundary || 'N/A' %> <span style="font-size: 11pt;">m</span>
+          </div>
+        </div>
+
+        <div style="
+            background: rgba(200, 178, 115, 0.15);
+            border: 1px solid #C8B273;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Distance to Window</div>
+          <div style="font-size: 18pt; color: #ffffff; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+            <%= data.ashp?.nearestWindowDistance || 'N/A' %> <span style="font-size: 11pt;">m</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- R290 Compliance -->
+    <div style="
+        background: <%= data.ashp?.r290Compliant ? 'rgba(100, 255, 100, 0.15)' : 'rgba(255, 100, 100, 0.15)' %>;
+        border: 3px solid <%= data.ashp?.r290Compliant ? '#44FF44' : '#FF4444' %>;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 24px <%= data.ashp?.r290Compliant ? 'rgba(68, 255, 68, 0.25)' : 'rgba(255, 68, 68, 0.25)' %>;
+    ">
+      <h3 style="
+          font-size: 16pt;
+          font-weight: 900;
+          color: <%= data.ashp?.r290Compliant ? '#66FF66' : '#FF6666' %>;
+          margin-bottom: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      ">R290 Compliance</h3>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div>
+          <div style="font-size: 11pt; color: #ffffff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">System Compliant:</div>
+          <div style="font-size: 22pt; color: #ffffff; font-weight: 900; margin-top: 6px; text-shadow: 0 3px 6px rgba(0,0,0,0.5);">
+            <%= data.ashp?.r290Compliant ? 'YES ✓' : 'NO ✗' %>
+          </div>
+        </div>
+      </div>
+
+      <% if (data.ashp?.r290Checks) { %>
+        <div style="
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        ">
+          <div style="font-size: 9pt; color: #C8B273; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Safety Checks</div>
+          <div style="font-size: 11pt; color: #ffffff; font-weight: 600; line-height: 1.4; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+            <%= data.ashp.r290Checks %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- ASHP Photos -->
+    <% if ((data.photos?.ashpHabitableWindow && data.photos.ashpHabitableWindow.length > 0) ||
+           (data.photos?.ashpProposed && data.photos.ashpProposed.length > 0) ||
+           (data.photos?.ashpArea && data.photos.ashpArea.length > 0)) { %>
+      <div>
+        <h3 style="
+            font-size: 16pt;
+            font-weight: 900;
+            color: #C8B273;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+        ">Location Photos</h3>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <% if (data.photos?.ashpHabitableWindow && data.photos.ashpHabitableWindow.length > 0) { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                border-radius: 10px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            ">
+              <img src="<%= data.photos.ashpHabitableWindow[0].url %>" alt="Distance to Window" style="
+                  width: 100%;
+                  height: 240px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+              " />
+              <div style="
+                  background: rgba(200, 178, 115, 0.2);
+                  padding: 8px;
+                  text-align: center;
+                  border-radius: 0 0 6px 6px;
+              ">
+                <div style="font-size: 9pt; color: #C8B273; font-weight: 800; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                  Distance to Habitable Window
+                </div>
+              </div>
+            </div>
+          <% } %>
+
+          <% if (data.photos?.ashpProposed && data.photos.ashpProposed.length > 0) { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                border-radius: 10px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            ">
+              <img src="<%= data.photos.ashpProposed[0].url %>" alt="Proposed Location" style="
+                  width: 100%;
+                  height: 240px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+              " />
+              <div style="
+                  background: rgba(200, 178, 115, 0.2);
+                  padding: 8px;
+                  text-align: center;
+                  border-radius: 0 0 6px 6px;
+              ">
+                <div style="font-size: 9pt; color: #C8B273; font-weight: 800; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                  Proposed Location
+                </div>
+              </div>
+            </div>
+          <% } %>
+
+          <% if (data.photos?.ashpArea && data.photos.ashpArea.length > 0) { %>
+            <div style="
+                background: linear-gradient(135deg,
+                    rgba(244, 228, 188, 0.08) 0%,
+                    rgba(212, 175, 55, 0.05) 100%);
+                backdrop-filter: blur(8px);
+                border-radius: 10px;
+                border: 2px solid #C8B273;
+                padding: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            ">
+              <img src="<%= data.photos.ashpArea[0].url %>" alt="Installation Area" style="
+                  width: 100%;
+                  height: 240px;
+                  object-fit: cover;
+                  display: block;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+              " />
+              <div style="
+                  background: rgba(200, 178, 115, 0.2);
+                  padding: 8px;
+                  text-align: center;
+                  border-radius: 0 0 6px 6px;
+              ">
+                <div style="font-size: 9pt; color: #C8B273; font-weight: 800; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                  Installation Area
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+
+  </div>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<!-- ==========================================
+     SECTION 09: PHOTO DOCUMENTATION - ULTRA-VIBRANT
+     ========================================== -->
+<div style="
+    background: linear-gradient(135deg,
+        rgba(244, 228, 188, 0.15) 0%,
+        rgba(212, 175, 55, 0.12) 50%,
+        rgba(200, 178, 115, 0.08) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #C8B273;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.25),
+        0 4px 16px rgba(200, 178, 115, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+" id="photo-documentation">
+
+  <!-- Shimmer Animation -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(244, 228, 188, 0.1), transparent); animation: shimmer 3s infinite;"></div>
+
+  <!-- Section Header -->
+  <div style="display: table; width: 100%; margin-bottom: 20px; position: relative; z-index: 2;">
+    <div style="display: table-cell; width: 52px; vertical-align: middle; text-align: center;">
+      <div style="
+          width: 44px;
+          height: 44px;
+          background: linear-gradient(135deg, #C8B273, #D4AF37);
+          border-radius: 10px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(200, 178, 115, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+      ">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="#2C3E50" stroke-width="2.5"/>
+          <circle cx="8.5" cy="8.5" r="1.5" fill="#2C3E50"/>
+          <path d="M21 15L16 10L5 21" stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display: table-cell; vertical-align: middle; padding-left: 14px;">
+      <div style="
+          font-size: 20pt;
+          font-weight: 900;
+          color: #C8B273;
+          text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+          letter-spacing: 0.5px;
+          margin: 0;
+      ">
+        PHOTO DOCUMENTATION
+      </div>
+      <div style="font-size: 10pt; color: #ffffff; font-weight: 600; margin-top: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+        Comprehensive Visual Survey
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; z-index: 2;">
+
+    <!-- Helper function to render photo category -->
+    <%
+    function renderPhotoCategory(title, photos) {
+      if (!photos || photos.length === 0) return '';
+      return `
+        <div style="margin-bottom: 30px;">
+          <h3 style="
+              font-size: 15pt;
+              font-weight: 900;
+              color: #C8B273;
+              margin-bottom: 14px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+              border-bottom: 2px solid rgba(200, 178, 115, 0.3);
+              padding-bottom: 8px;
+          ">${title}</h3>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            ${photos.map((photo, index) => `
+              <div style="
+                  background: linear-gradient(135deg,
+                      rgba(244, 228, 188, 0.08) 0%,
+                      rgba(212, 175, 55, 0.05) 100%);
+                  backdrop-filter: blur(8px);
+                  border-radius: 10px;
+                  border: 2px solid #C8B273;
+                  padding: 6px;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+              ">
+                <img src="${photo.url}" alt="${title} ${index + 1}" style="
+                    width: 100%;
+                    height: 180px;
+                    object-fit: cover;
+                    display: block;
+                    border-radius: 6px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                " />
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+    %>
+
+    <!-- Property Exterior -->
+    <% if (data.photos?.property && data.photos.property.length > 0) { %>
+      <%- renderPhotoCategory('Property Exterior', data.photos.property) %>
+    <% } %>
+
+    <!-- Loft & Insulation -->
+    <% if (data.photos?.loft && data.photos.loft.length > 0) { %>
+      <%- renderPhotoCategory('Loft & Insulation', data.photos.loft) %>
+    <% } %>
+
+    <!-- Windows & Glazing -->
+    <% if (data.photos?.glazing && data.photos.glazing.length > 0) { %>
+      <%- renderPhotoCategory('Windows & Glazing', data.photos.glazing) %>
+    <% } %>
+
+    <!-- Heating Systems -->
+    <% if ((data.photos?.boiler && data.photos.boiler.length > 0) || (data.photos?.cylinder && data.photos.cylinder.length > 0)) { %>
+      <div style="margin-bottom: 30px;">
+        <h3 style="
+            font-size: 15pt;
+            font-weight: 900;
+            color: #C8B273;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            border-bottom: 2px solid rgba(200, 178, 115, 0.3);
+            padding-bottom: 8px;
+        ">Heating Systems</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <% if (data.photos?.boiler) { %>
+            <% data.photos.boiler.forEach((photo, index) => { %>
+              <div style="
+                  background: linear-gradient(135deg,
+                      rgba(244, 228, 188, 0.08) 0%,
+                      rgba(212, 175, 55, 0.05) 100%);
+                  backdrop-filter: blur(8px);
+                  border-radius: 10px;
+                  border: 2px solid #C8B273;
+                  padding: 6px;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+              ">
+                <img src="<%= photo.url %>" alt="Boiler <%= index + 1 %>" style="
+                    width: 100%;
+                    height: 180px;
+                    object-fit: cover;
+                    display: block;
+                    border-radius: 6px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                " />
+                <div style="
+                    background: rgba(200, 178, 115, 0.2);
+                    padding: 6px;
+                    text-align: center;
+                    font-size: 9pt;
+                    color: #C8B273;
+                    font-weight: 800;
+                    border-radius: 0 0 6px 6px;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+                ">Boiler</div>
+              </div>
+            <% }); %>
+          <% } %>
+
+          <% if (data.photos?.cylinder) { %>
+            <% data.photos.cylinder.forEach((photo, index) => { %>
+              <div style="
+                  background: linear-gradient(135deg,
+                      rgba(244, 228, 188, 0.08) 0%,
+                      rgba(212, 175, 55, 0.05) 100%);
+                  backdrop-filter: blur(8px);
+                  border-radius: 10px;
+                  border: 2px solid #C8B273;
+                  padding: 6px;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+              ">
+                <img src="<%= photo.url %>" alt="Cylinder <%= index + 1 %>" style="
+                    width: 100%;
+                    height: 180px;
+                    object-fit: cover;
+                    display: block;
+                    border-radius: 6px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                " />
+                <div style="
+                    background: rgba(200, 178, 115, 0.2);
+                    padding: 6px;
+                    text-align: center;
+                    font-size: 9pt;
+                    color: #C8B273;
+                    font-weight: 800;
+                    border-radius: 0 0 6px 6px;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+                ">Cylinder</div>
+              </div>
+            <% }); %>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Electrical Systems -->
+    <% if ((data.photos?.consumerUnit && data.photos.consumerUnit.length > 0) ||
+           (data.photos?.electrical && data.photos.electrical.length > 0) ||
+           (data.photos?.meter && data.photos.meter.length > 0)) { %>
+      <%- renderPhotoCategory('Electrical Systems', [...(data.photos.consumerUnit || []), ...(data.photos.electrical || []), ...(data.photos.meter || [])]) %>
+    <% } %>
+
+    <!-- ASHP Location -->
+    <% if ((data.photos?.ashpHabitableWindow && data.photos.ashpHabitableWindow.length > 0) ||
+           (data.photos?.ashpProposed && data.photos.ashpProposed.length > 0) ||
+           (data.photos?.ashpArea && data.photos.ashpArea.length > 0)) { %>
+      <%- renderPhotoCategory('ASHP Location', [...(data.photos.ashpHabitableWindow || []), ...(data.photos.ashpProposed || []), ...(data.photos.ashpArea || [])]) %>
+    <% } %>
+
+    <!-- Additional Photos -->
+    <% if ((data.photos?.additional1 && data.photos.additional1.length > 0) ||
+           (data.photos?.additional2 && data.photos.additional2.length > 0) ||
+           (data.photos?.additional3 && data.photos.additional3.length > 0)) { %>
+      <%- renderPhotoCategory('Additional Photos', [...(data.photos.additional1 || []), ...(data.photos.additional2 || []), ...(data.photos.additional3 || [])]) %>
+    <% } %>
+
+    <!-- End of Survey Banner -->
+    <div style="
+        background: linear-gradient(135deg, #C8B273, #D4AF37);
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        margin-top: 30px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    ">
+      <div style="font-size: 16pt; color: #2C3E50; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">
+        END OF SURVEY DOCUMENTATION
+      </div>
+      <div style="font-size: 11pt; color: #2C3E50; font-weight: 600; margin-top: 8px;">
+        Generated by Vertex Solar PDF System
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="margin-top: 40px; padding: 20px; text-align: center; color: #C8B273; font-size: 9pt;">
+  <div>VERTEX RENEWABLE SURVEYS - The New Standard for Renewable Surveys</div>
+  <div style="margin-top: 8px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>
+</div>
+
+</body>
+</html>
+

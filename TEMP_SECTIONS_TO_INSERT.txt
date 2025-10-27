@@ -1,0 +1,12 @@
+SECTION 04 STARTS HERE - This is just a marker file to help with the large insertion.
+
+I'll actually do the insertion directly using the Edit tool in smaller chunks.
+
+Let me break this down into manageable pieces:
+1. Section 04 - Room Assessment
+2. Section 05 - Heating Systems
+3. Section 06 - Electrical Systems
+4. Section 07 - ASHP Assessment
+5. Section 09 - Photo Documentation
+
+Each section will be added sequentially.

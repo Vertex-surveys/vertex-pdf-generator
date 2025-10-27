@@ -1,291 +1,282 @@
-// Image Processing Module
-// Handles image optimization, resizing, and processing
+// IMAGE PROCESSING & DOWNLOAD FUNCTIONS
+// For Vertex Solar PDF generation
 
+const axios = require('axios');
 const sharp = require('sharp');
-const path = require('path');
 
-class ImageProcessor {
-  constructor(options = {}) {
-    this.maxWidth = options.maxWidth || 1200;
-    this.maxHeight = options.maxHeight || 800;
-    this.quality = options.quality || 90;
-    this.format = options.format || 'jpeg';
-  }
-
-  // Process a single image
-  async processImage(imageBuffer, options = {}) {
-    try {
-      const {
-        width = this.maxWidth,
-        height = this.maxHeight,
-        quality = this.quality,
-        format = this.format,
-        fit = 'cover'
-      } = options;
-
-      console.log(`🖼️ Processing image: ${width}x${height}, quality: ${quality}`);
-
-      const processedBuffer = await sharp(imageBuffer)
-        .resize(width, height, { 
-          fit: fit,
-          withoutEnlargement: true
-        })
-        .jpeg({ quality: quality })
-        .toBuffer();
-
-      console.log(`✅ Image processed successfully (${processedBuffer.length} bytes)`);
-      return processedBuffer;
-
-    } catch (error) {
-      console.error(`❌ Image processing failed:`, error.message);
-      throw new Error(`Image processing failed: ${error.message}`);
-    }
-  }
-
-  // Process multiple images
-  async processImages(images, options = {}) {
-    try {
-      console.log(`🖼️ Processing ${images.length} images`);
-
-      const processedImages = await Promise.all(
-        images.map(async (image, index) => {
-          try {
-            const processedBuffer = await this.processImage(image.buffer, options);
-            return {
-              ...image,
-              buffer: processedBuffer,
-              processed: true,
-              originalSize: image.buffer.length,
-              processedSize: processedBuffer.length,
-              compressionRatio: Math.round((1 - processedBuffer.length / image.buffer.length) * 100)
-            };
-          } catch (error) {
-            console.error(`❌ Failed to process image ${index}:`, error.message);
-            return {
-              ...image,
-              processed: false,
-              error: error.message
-            };
-          }
-        })
-      );
-
-      const successful = processedImages.filter(img => img.processed);
-      const failed = processedImages.filter(img => !img.processed);
-
-      console.log(`✅ Processed ${successful.length}/${images.length} images successfully`);
-      if (failed.length > 0) {
-        console.warn(`⚠️ ${failed.length} images failed to process`);
+/**
+ * Download an image from a URL with timeout
+ * @param {String} url - Image URL
+ * @param {Number} timeout - Timeout in milliseconds (default 10000)
+ * @returns {Buffer} Image buffer
+ */
+async function downloadImage(url, timeout = 10000) {
+  try {
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      timeout: timeout,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Vertex-Solar-Bot/1.0)'
       }
+    });
 
-      return processedImages;
-
-    } catch (error) {
-      console.error(`❌ Batch image processing failed:`, error.message);
-      throw new Error(`Batch image processing failed: ${error.message}`);
-    }
-  }
-
-  // Add watermark to image
-  async addWatermark(imageBuffer, watermarkPath, options = {}) {
-    try {
-      const {
-        gravity = 'southeast',
-        opacity = 0.7,
-        scale = 0.1
-      } = options;
-
-      console.log(`🏷️ Adding watermark to image`);
-
-      const processedBuffer = await sharp(imageBuffer)
-        .composite([{
-          input: watermarkPath,
-          gravity: gravity,
-          opacity: opacity,
-          scale: scale
-        }])
-        .jpeg({ quality: this.quality })
-        .toBuffer();
-
-      console.log(`✅ Watermark added successfully`);
-      return processedBuffer;
-
-    } catch (error) {
-      console.error(`❌ Watermarking failed:`, error.message);
-      throw new Error(`Watermarking failed: ${error.message}`);
-    }
-  }
-
-  // Create thumbnail
-  async createThumbnail(imageBuffer, size = 200) {
-    try {
-      console.log(`🖼️ Creating thumbnail (${size}x${size})`);
-
-      const thumbnailBuffer = await sharp(imageBuffer)
-        .resize(size, size, { 
-          fit: 'cover',
-          withoutEnlargement: true
-        })
-        .jpeg({ quality: 80 })
-        .toBuffer();
-
-      console.log(`✅ Thumbnail created successfully`);
-      return thumbnailBuffer;
-
-    } catch (error) {
-      console.error(`❌ Thumbnail creation failed:`, error.message);
-      throw new Error(`Thumbnail creation failed: ${error.message}`);
-    }
-  }
-
-  // Get image metadata
-  async getImageMetadata(imageBuffer) {
-    try {
-      const metadata = await sharp(imageBuffer).metadata();
-      return {
-        width: metadata.width,
-        height: metadata.height,
-        format: metadata.format,
-        size: imageBuffer.length,
-        density: metadata.density,
-        hasAlpha: metadata.hasAlpha,
-        channels: metadata.channels
-      };
-    } catch (error) {
-      console.error(`❌ Failed to get image metadata:`, error.message);
-      return null;
-    }
-  }
-
-  // Validate image
-  async validateImage(imageBuffer) {
-    try {
-      const metadata = await this.getImageMetadata(imageBuffer);
-      
-      if (!metadata) {
-        return { valid: false, error: 'Invalid image format' };
-      }
-
-      const issues = [];
-      
-      if (metadata.width < 100 || metadata.height < 100) {
-        issues.push('Image too small');
-      }
-      
-      if (metadata.size < 10000) {
-        issues.push('Image file too small');
-      }
-      
-      if (metadata.size > 10000000) {
-        issues.push('Image file too large');
-      }
-
-      return {
-        valid: issues.length === 0,
-        issues: issues,
-        metadata: metadata
-      };
-
-    } catch (error) {
-      console.error(`❌ Image validation failed:`, error.message);
-      return { valid: false, error: error.message };
-    }
-  }
-
-  // Process photos from Fulcrum
-  async processFulcrumPhotos(photos) {
-    try {
-      console.log(`📸 Processing ${photos.length} Fulcrum photos`);
-
-      const processedPhotos = [];
-
-      for (const photo of photos) {
-        try {
-          // Download photo if needed
-          let imageBuffer;
-          if (photo.photo_url) {
-            // For now, we'll use the URL directly
-            // In production, you might want to download and process
-            processedPhotos.push({
-              ...photo,
-              processed: true,
-              note: 'Using original URL'
-            });
-          } else if (photo.buffer) {
-            const processedBuffer = await this.processImage(photo.buffer);
-            processedPhotos.push({
-              ...photo,
-              buffer: processedBuffer,
-              processed: true
-            });
-          } else {
-            processedPhotos.push({
-              ...photo,
-              processed: false,
-              error: 'No image data available'
-            });
-          }
-        } catch (error) {
-          console.error(`❌ Failed to process photo:`, error.message);
-          processedPhotos.push({
-            ...photo,
-            processed: false,
-            error: error.message
-          });
-        }
-      }
-
-      const successful = processedPhotos.filter(p => p.processed);
-      console.log(`✅ Processed ${successful.length}/${photos.length} photos successfully`);
-
-      return processedPhotos;
-
-    } catch (error) {
-      console.error(`❌ Fulcrum photo processing failed:`, error.message);
-      throw new Error(`Fulcrum photo processing failed: ${error.message}`);
-    }
-  }
-
-  // Optimize for PDF
-  async optimizeForPDF(imageBuffer, options = {}) {
-    try {
-      const {
-        maxWidth = 800,
-        maxHeight = 600,
-        quality = 85
-      } = options;
-
-      console.log(`📄 Optimizing image for PDF`);
-
-      const optimizedBuffer = await sharp(imageBuffer)
-        .resize(maxWidth, maxHeight, { 
-          fit: 'inside',
-          withoutEnlargement: true
-        })
-        .jpeg({ 
-          quality: quality,
-          progressive: true
-        })
-        .toBuffer();
-
-      console.log(`✅ Image optimized for PDF`);
-      return optimizedBuffer;
-
-    } catch (error) {
-      console.error(`❌ PDF optimization failed:`, error.message);
-      throw new Error(`PDF optimization failed: ${error.message}`);
-    }
+    return Buffer.from(response.data);
+  } catch (error) {
+    console.error(`Failed to download image: ${url}`, error.message);
+    return null;
   }
 }
 
-// Create image processor instance
-function createImageProcessor(options = {}) {
-  return new ImageProcessor(options);
+/**
+ * Download multiple images in parallel
+ * @param {Array} photoUrls - Array of photo URLs or objects with url property
+ * @returns {Array} Array of image buffers
+ */
+async function downloadAllImages(photoUrls) {
+  console.log(`📥 Downloading ${photoUrls.length} images in parallel...`);
+  const startTime = Date.now();
+
+  const downloadPromises = photoUrls.map(photo => {
+    const url = typeof photo === 'string' ? photo : (photo.url || photo.photo_url);
+    return downloadImage(url);
+  });
+
+  const results = await Promise.all(downloadPromises);
+  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+  
+  const successCount = results.filter(r => r !== null).length;
+  console.log(`✅ Downloaded ${successCount}/${photoUrls.length} images in ${duration}s`);
+
+  return results;
+}
+
+/**
+ * Optimize an image using Sharp
+ * @param {Buffer} imageBuffer - Image buffer
+ * @param {Object} options - Optimization options
+ * @returns {Buffer} Optimized image buffer
+ */
+async function optimizeImage(imageBuffer, options = {}) {
+  const {
+    width = 1200,
+    height = 800,
+    quality = 85,
+    fit = 'cover'
+  } = options;
+
+  try {
+    const optimized = await sharp(imageBuffer)
+      .resize(width, height, { 
+        fit,
+        withoutEnlargement: true 
+      })
+      .jpeg({ 
+        quality,
+        progressive: true,
+        mozjpeg: true 
+      })
+      .toBuffer();
+
+    return optimized;
+  } catch (error) {
+    console.error('Failed to optimize image:', error.message);
+    return imageBuffer; // Return original if optimization fails
+  }
+}
+
+/**
+ * Optimize multiple images in parallel (batch processing)
+ * @param {Array} imageBuffers - Array of image buffers
+ * @param {Object} options - Optimization options
+ * @returns {Array} Array of optimized image buffers
+ */
+async function optimizeImages(imageBuffers, options = {}) {
+  console.log(`🖼️  Optimizing ${imageBuffers.length} images...`);
+  const startTime = Date.now();
+
+  const optimizationPromises = imageBuffers
+    .filter(buffer => buffer !== null)
+    .map(buffer => optimizeImage(buffer, options));
+
+  const results = await Promise.all(optimizationPromises);
+  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+  
+  console.log(`✅ Optimized ${results.length} images in ${duration}s`);
+
+  return results;
+}
+
+/**
+ * Convert image buffer to base64 data URL
+ * @param {Buffer} buffer - Image buffer
+ * @param {String} mimeType - MIME type (default 'image/jpeg')
+ * @returns {String} Data URL
+ */
+function bufferToDataURL(buffer, mimeType = 'image/jpeg') {
+  if (!buffer) return '';
+  return `data:${mimeType};base64,${buffer.toString('base64')}`;
+}
+
+/**
+ * Extract photos from form values by category
+ * @param {Object} formValues - Fulcrum form values
+ * @returns {Object} Organized photos by category
+ */
+function organizePhotosByCategory(formValues) {
+  const categories = {
+    hero: [],
+    elevation: [],
+    room: [],
+    heating: [],
+    electrical: [],
+    ashp: [],
+    meter: [],
+    other: []
+  };
+
+  // Define photo field mappings
+  const photoFieldMap = {
+    'hero_photo_front_page': 'hero',
+    'elevation_photos_section': 'elevation',
+    'room_photo': 'room',
+    'heating_system_photos': 'heating',
+    'electrical_photos': 'electrical',
+    'ashp_location_photos': 'ashp',
+    'meter_photos': 'meter'
+  };
+
+  // Extract photos from form values
+  Object.keys(formValues).forEach(fieldKey => {
+    const value = formValues[fieldKey];
+    
+    if (Array.isArray(value) && value.length > 0) {
+      const firstItem = value[0];
+      
+      // Check if it's a photo field
+      if (firstItem && typeof firstItem === 'object' && 'photo_id' in firstItem) {
+        const category = photoFieldMap[fieldKey] || 'other';
+        categories[category].push(...value);
+      }
+    }
+  });
+
+  return categories;
+}
+
+/**
+ * Generate photo URLs from Fulcrum photo data
+ * @param {Object} photo - Photo object from Fulcrum
+ * @returns {String} Photo URL
+ */
+function generatePhotoURL(photo) {
+  if (!photo) return '';
+  
+  // Fulcrum photo URL format
+  if (photo.photo_id) {
+    return `https://fulcrum-photos.s3.amazonaws.com/${photo.photo_id}.jpg`;
+  }
+  
+  if (photo.url) {
+    return photo.url;
+  }
+  
+  if (photo.mediaID) {
+    return `https://fulcrum-photos.s3.amazonaws.com/${photo.mediaID}.jpg`;
+  }
+  
+  return '';
+}
+
+/**
+ * Count total photos in form values
+ * @param {Object} formValues - Fulcrum form values
+ * @returns {Number} Total photo count
+ */
+function countPhotos(formValues) {
+  let count = 0;
+  
+  Object.values(formValues).forEach(value => {
+    if (Array.isArray(value) && value.length > 0) {
+      const firstItem = value[0];
+      if (firstItem && typeof firstItem === 'object' && 'photo_id' in firstItem) {
+        count += value.length;
+      }
+    }
+  });
+  
+  return count;
+}
+
+/**
+ * Process and prepare all photos for PDF
+ * Downloads, optimizes, and organizes photos by category
+ * @param {Object} formValues - Fulcrum form values
+ * @returns {Promise<Object>} Processed photos organized by category
+ */
+async function processAllPhotos(formValues) {
+  console.log('📸 Processing all photos...');
+  const startTime = Date.now();
+
+  // Organize photos by category
+  const organizedPhotos = organizePhotosByCategory(formValues);
+  
+  // Generate photo URLs
+  const photoURLs = [];
+  Object.keys(organizedPhotos).forEach(category => {
+    organizedPhotos[category].forEach(photo => {
+      const url = generatePhotoURL(photo);
+      if (url) {
+        photoURLs.push({ url, category, photo });
+      }
+    });
+  });
+
+  if (photoURLs.length === 0) {
+    console.log('⚠️  No photos found');
+    return {};
+  }
+
+  // Download all images in parallel
+  const imageBuffers = await downloadAllImages(photoURLs);
+  
+  // Optimize all images in parallel
+  const optimizedBuffers = await optimizeImages(imageBuffers);
+  
+  // Build result with base64 data URLs
+  const processedPhotos = {};
+  let bufferIndex = 0;
+  
+  Object.keys(organizedPhotos).forEach(category => {
+    const categoryPhotos = organizedPhotos[category];
+    
+    if (categoryPhotos.length > 0) {
+      processedPhotos[category] = categoryPhotos.map((photo, idx) => {
+        const buffer = optimizedBuffers[bufferIndex];
+        bufferIndex++;
+        
+        return {
+          ...photo,
+          dataURL: bufferToDataURL(buffer),
+          url: generatePhotoURL(photo)
+        };
+      });
+    }
+  });
+
+  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+  console.log(`✅ Processed all photos in ${duration}s`);
+
+  return processedPhotos;
 }
 
 module.exports = {
-  ImageProcessor,
-  createImageProcessor
+  downloadImage,
+  downloadAllImages,
+  optimizeImage,
+  optimizeImages,
+  bufferToDataURL,
+  organizePhotosByCategory,
+  generatePhotoURL,
+  countPhotos,
+  processAllPhotos
 };
-
-

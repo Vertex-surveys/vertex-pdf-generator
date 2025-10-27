@@ -103,6 +103,7 @@ COPY config ./config
 # Set Puppeteer to use system Chromium (2025 best practice)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV CHROMIUM_FLAGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage"
 
 # Create outputs directory
 RUN mkdir -p /app/outputs && chown -R nodejs:nodejs /app

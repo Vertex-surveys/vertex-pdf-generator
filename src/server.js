@@ -62,11 +62,11 @@ app.post('/api/generate-pdf', async (req, res) => {
       console.log('📋 Detected structured data format');
       // This is already structured - use directly
       const data = webhookData;
-    
-    // Validate required data
-    if (!data.property || !data.property.address) {
-      return res.status(400).json({ 
-        error: 'Missing required property data',
+      
+      // Validate required data
+      if (!data.property || !data.property.address) {
+        return res.status(400).json({ 
+          error: 'Missing required property data',
           received: Object.keys(req.body),
           note: 'Expected: { property: { address: "..." } }'
         });
@@ -257,7 +257,7 @@ async function generateFooterTemplate(data) {
 }
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Vertex PDF Generator running on port ${PORT}`);
   console.log(`📄 Health check: http://localhost:${PORT}/health`);
   console.log(`🧪 Test PDF: http://localhost:${PORT}/api/test-pdf`);
@@ -265,5 +265,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
-

@@ -2,6 +2,11 @@ FROM node:20-slim
 
 WORKDIR /app
 
+# Install Sharp dependencies
+RUN apt-get update && apt-get install -y \
+    libvips-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Puppeteer dependencies
 RUN apt-get update && apt-get install -y \
     chromium \
@@ -21,16 +26,18 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     libxss1 \
-    lsb-release \
     xdg-utils \
     ca-certificates \
+    python3 \
+    make \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production --ignore-scripts
+# Install dependencies (allow scripts to run for Sharp)
+RUN npm ci --only=production
 
 # Copy application
 COPY src ./src
